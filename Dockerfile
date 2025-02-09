@@ -14,8 +14,6 @@ RUN npm install -g pnpm
 # Install frontend dependencies
 RUN pnpm install
 
-# Copy the rest of the frontend code
-COPY frontend ./frontend/
 
 # Build the frontend
 RUN pnpm build
@@ -26,14 +24,9 @@ FROM python:3.9-slim AS backend-builder
 # Set the working directory for the backend
 WORKDIR /backend
 
-# Copy requirements.txt
-COPY backend/requirements.txt .
-
 # Install backend dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the backend code
-COPY backend .
 
 # Stage 3: Final Image
 FROM python:3.9-slim
@@ -42,10 +35,10 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy built frontend files from the frontend-builder stage
-COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
+COPY --from=frontend-builder /frontend/dist ./frontend/dist
 
 # Copy backend files from the backend-builder stage
-COPY --from=backend-builder /app/backend ./backend
+COPY --from=backend-builder /backend ./backend
 
 # Install backend dependencies again (if needed)
 RUN pip install --no-cache-dir -r backend/requirements.txt
