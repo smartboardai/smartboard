@@ -2,7 +2,7 @@
 FROM node:18-slim AS frontend-builder
 
 # Set the working directory for the frontend
-WORKDIR /app/frontend
+WORKDIR /
 
 # Copy package.json and pnpm-lock.yaml
 COPY frontend/package.json frontend/pnpm-lock.yaml ./frontend/
