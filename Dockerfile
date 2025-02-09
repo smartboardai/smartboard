@@ -8,8 +8,7 @@ RUN apt-get update && \
     npm install -g pnpm
 
 COPY . .
-
-WORKDIR /frontend
+RUN cd frontend
 
 RUN npm install -g pnpm
 
@@ -17,7 +16,8 @@ RUN pnpm install
 
 RUN pnpm build
 
-WORKDIR /backend
+RUN cd ..
+RUN cd backend
 
 RUN pip install --no-cache-dir -r requirements.txt
 

@@ -2,7 +2,7 @@ import type { App } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
 import { setupPageGuard } from './permission'
-import { ChatLayout } from '@/views/chat/layout'
+// import { ChatLayout } from '@/views/chat/layout'
 import { AdminLayout } from '@/views/admin/layout'
 
 const routes: RouteRecordRaw[] = [
@@ -129,17 +129,17 @@ const routes: RouteRecordRaw[] = [
       //   component: () => import('@/views/admin/files_manager/index.vue'), 
       //   meta: { requiresAuth: true },
       // },
-      {
-        path: '/admin/chat',
-        name: 'main-chat',
-        component: () => import('@/views/chat/layout/Layout.vue'),
-      },
+      // {
+      //   path: '/admin/chat',
+      //   name: 'main-chat',
+      //   component: () => import('@/views/chat/layout/Layout.vue'),
+      // },
 
-      {
-        path: '/admin/country',
-        name: 'country',
-        component: () => import('@/views/admin/country/index.vue'),
-      },
+      // {
+      //   path: '/admin/country',
+      //   name: 'country',
+      //   component: () => import('@/views/admin/country/index.vue'),
+      // },
    
    
    
