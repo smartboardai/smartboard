@@ -7,20 +7,16 @@ RUN apt-get update && \
     apt-get install -y nodejs && \
     npm install -g pnpm
 
-COPY . .
-RUN cd frontend
-
 RUN npm install -g pnpm
 
+COPY . .
+RUN cd frontend
 RUN pnpm install
-
 RUN pnpm build
-
 RUN cd ..
 RUN cd backend
-
 RUN pip install --no-cache-dir -r requirements.txt
-
+RUN cd ..
 # Expose ports for frontend and backend
 EXPOSE 8080 8000
 
