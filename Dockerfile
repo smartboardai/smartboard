@@ -23,7 +23,7 @@ RUN pnpm build
 FROM python:3.9-slim AS backend-builder
 
 # Set the working directory for the backend
-WORKDIR /app/backend
+WORKDIR /
 
 # Copy requirements.txt
 COPY backend/requirements.txt .
