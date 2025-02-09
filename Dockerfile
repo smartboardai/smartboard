@@ -3,6 +3,8 @@ FROM node:18-slim AS frontend-builder
 
 
 COPY . .
+# Set the working directory for the backend
+WORKDIR /frontend
 # Copy package.json and pnpm-lock.yaml
 COPY frontend/package.json frontend/pnpm-lock.yaml ./frontend/
 
@@ -21,7 +23,8 @@ RUN pnpm build
 # Stage 2: Build the Backend
 FROM python:3.9-slim AS backend-builder
 
-
+# Set the working directory for the backend
+WORKDIR /backend
 
 # Copy requirements.txt
 COPY backend/requirements.txt .
