@@ -108,16 +108,6 @@ By integrating Generative AI, this project will transform discussion boards into
    - Open your browser and navigate to `http://localhost:8080` (frontend) and `http://127.0.0.1:8000` (backend).
 
 ---
-
-## Contributing
-We welcome contributions! Please follow these steps:
-1. Fork the repository.
-2. Create a new branch for your feature or bugfix.
-3. Commit your changes and push to the branch.
-4. Submit a pull request with a detailed description of your changes.
-
----
-
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
