@@ -50,7 +50,7 @@ export const useAuthStore = defineStore('auth-store', {
         const snakeData = camelToSnake(userData);
         snakeData.password2 = userData.password
         const { data, error } = await post({
-          url: 'auth/register/',
+          url: 'users/register/',
           data: snakeData,
           method: 'POST',
         });
@@ -70,7 +70,7 @@ export const useAuthStore = defineStore('auth-store', {
     async Login(username: string, password: string): Promise<void> {
       try {
         const { data, error } = await post({
-          url: 'auth/login/',
+          url: 'users/login/',
           data: { username, password },
           method: 'POST',
         });
