@@ -1,4 +1,4 @@
-import { deleteDataFromTable, fetchDataFromTable, insertDataIntoTable, updateDataInTable } from '@/utils/supabasehelper';
+import { deleteDataFromTable, fetchDataFromTable, insertDataIntoTable, updateDataInTable } from '@/utils/supabaseHelper';
 import { defineStore } from 'pinia';
 
 // Create a generic base store

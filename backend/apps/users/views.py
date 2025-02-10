@@ -1,94 +1,98 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
-from django.contrib.auth import authenticate
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
-from .serializers import RegisterSerializer, LoginSerializer
+from django.contrib.auth import authenticate, get_user_model
+from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAdminUser
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 
+User = get_user_model()
+
+# Global function for standardized response
+def response_format(data=None, error=None, status_code=status.HTTP_200_OK):
+    return Response({"data": data, "error": error}, status=status_code)
+
+
+# User Registration View
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({
-            "user": serializer.data,
-            "token": token.key
-        }, status=status.HTTP_201_CREATED)
+        if serializer.is_valid():
+            user = serializer.save()
+            token, _ = Token.objects.get_or_create(user=user)
+            return response_format(
+                data={"user": serializer.data, "token": token.key},
+                status_code=status.HTTP_201_CREATED
+            )
+        return response_format(error=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
 
+
+# User Login View
 class LoginView(APIView):
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        username = serializer.validated_data['username']
-        password = serializer.validated_data['password']
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            token, created = Token.objects.get_or_create(user=user)
-            return Response({
-                "user": {
-                    "id": user.id,
-                    "username": user.username,
-                    "email": user.email,
-                    "first_name": user.first_name,
-                    "last_name": user.last_name,
-                    "role": user.role,
-                },
-                "token": token.key,
-            }, status=status.HTTP_200_OK)
-        else:
-            return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        
-from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
-from rest_framework import status, generics
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.permissions import IsAdminUser
-from .serializers import UserSerializer
-
-User = get_user_model()
+        if serializer.is_valid():
+            username = serializer.validated_data["username"]
+            password = serializer.validated_data["password"]
+            user = authenticate(username=username, password=password)
+            if user:
+                token, _ = Token.objects.get_or_create(user=user)
+                return response_format(
+                    data={
+                        "user": {
+                            "id": user.id,
+                            "username": user.username,
+                            "email": user.email,
+                            "first_name": user.first_name,
+                            "last_name": user.last_name,
+                            "role": getattr(user, "role", None),
+                        },
+                        "token": token.key,
+                    }
+                )
+            return response_format(error="Invalid credentials", status_code=status.HTTP_401_UNAUTHORIZED)
+        return response_format(error=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
 
 
-# Get All Users
+# Get All Users (Admin only)
 class GetAllUsersView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # permission_classes = [IsAdminUser]  # Only admin can view all users
+    # permission_classes = [IsAdminUser]
 
 
-# Update User
+# Update User (Admin only)
 class UpdateUserView(APIView):
-    permission_classes = [IsAdminUser]  # Only admin can update users
+    permission_classes = [IsAdminUser]
 
     def put(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return response_format(data=serializer.data)
+        return response_format(error=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)
 
 
-# Delete User
+# Delete User (Admin only)
 class DeleteUserView(APIView):
-    permission_classes = [IsAdminUser]  # Only admin can delete users
+    permission_classes = [IsAdminUser]
 
     def delete(self, request, user_id):
         user = get_object_or_404(User, id=user_id)
         user.delete()
-        return Response({"message": "User deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        return response_format(data="User deleted successfully", status_code=status.HTTP_204_NO_CONTENT)
 
 
-# Delete All Users (Students & Instructors)
+# Delete All Users (Admin only)
 class DeleteAllUsersView(APIView):
-    permission_classes = [IsAdminUser]  # Only admin can delete all users
+    permission_classes = [IsAdminUser]
 
     def delete(self, request):
         User.objects.all().delete()
-        return Response({"message": "All users deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        return response_format(data="All users deleted successfully", status_code=status.HTTP_204_NO_CONTENT)

@@ -1,18 +1,27 @@
-import { createClient } from '@supabase/supabase-js'
-// import { Database } from './database.types'
-// export const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-// export const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+import { createClient } from '@supabase/supabase-js';
 
-export const supabaseUrl = "https://yjubwgtvyces.supabase.co" //import.meta.env.VITE_SUPABASE_URL
-export const supabaseAnonKey = "hjj"//import.meta.env.VITE_SUPABASE_ANON_KEY
-export const service_role_key ="ll" //import.meta.env.VITE_GLOB_APP_PWA
-const supabaseAdmin = createClient(supabaseUrl, service_role_key, {
+// Supabase configuration
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const serviceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl.startsWith("https://") || !supabaseAnonKey || !serviceRoleKey) {
+  throw new Error("Supabase environment variables are not properly set.");
+}
+
+// Supabase admin client
+const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
   auth: {
     autoRefreshToken: false,
-    persistSession: false
-  }
-})
-// Access auth admin api
-export const adminAuthClient = supabaseAdmin.auth.admin
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
-export const supabaseUrlImage = `${supabaseUrl}/storage/v1/object/public`
+    persistSession: false,
+  },
+});
+
+// Access auth admin API
+export const adminAuthClient = supabaseAdmin.auth.admin;
+
+// Regular Supabase client for client-side interactions
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Supabase URL for public storage
+export const supabaseUrlImage = `${supabaseUrl}/storage/v1/object/public`;

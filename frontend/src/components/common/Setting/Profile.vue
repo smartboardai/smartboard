@@ -6,7 +6,7 @@ import { useUserStore } from '@/store'
 import { t } from '@/locales'
 import signOut from '@/views/auth/signOut.vue'
 import { useBasicLayout } from '@/hooks/useBasicLayout';
-import { getImageUrl } from '@/utils/supabasehelper';
+import { getImageUrl } from '@/utils/supabaseHelper';
 
 const { isMobile } = useBasicLayout();
 const span = computed(() => (isMobile ? 24 : 12));

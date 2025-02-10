@@ -10,7 +10,7 @@ import {
 import { router } from '@/router'
 import { useUserStore } from '@/store';
 import { get, del, put } from '@/utils/request'
-import { fetchDataFromTable } from '@/utils/supabasehelper';
+import { fetchDataFromTable } from '@/utils/supabaseHelper';
 import { supabase } from '@/utils/supabase';
 import { snakeToCamel } from '@/utils/functions';
 let tableName = 'conversation';

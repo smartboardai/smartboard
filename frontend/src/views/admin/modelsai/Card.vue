@@ -5,7 +5,7 @@ import { NTooltip, NAvatar, NBadge, NEllipsis, NSpin } from 'naive-ui'
 import { t } from '@/locales';
 import { SvgIcon } from '@/components/common';
 import { useCompanyStore } from '@/store';
-import { getImageUrl } from '@/utils/supabasehelper';
+import { getImageUrl } from '@/utils/supabaseHelper';
 
 interface Props {
     companyId: string

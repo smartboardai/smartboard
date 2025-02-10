@@ -16,7 +16,7 @@ import { SvgIcon } from '@/components/common';
 import Add from './Add.vue'
 import Update from './Update.vue'
 import { useRoute } from 'vue-router';
-import { getImageUrl } from '@/utils/supabasehelper';
+import { getImageUrl } from '@/utils/supabaseHelper';
 
 const { iconRender } = useIconRender()
 const route = useRoute()

@@ -39,6 +39,7 @@ interface UserAuth {
     email?: string
     password?: string
     reenteredPassword?: string
+    role: UserType | null;
 }
 
   interface UserMetaData{

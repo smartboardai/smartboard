@@ -56,39 +56,6 @@ function http<T = any>({
       throw new Error(`Unsupported method: ${method}`);
   }
 }
-// function http<T = any>({
-//   url,
-//   data,
-//   method,
-//   headers,
-//   onDownloadProgress,
-//   signal,
-//   beforeRequest,
-//   afterRequest,
-// }: HttpOption) {
-//   const successHandler = (res: AxiosResponse<T>) => {
-//     if (typeof res.data === 'string') {
-//       return res.data;
-//     }
-
-//     return res.data;
-//   };
-
-//   const failHandler = (error: Error) => {
-//     afterRequest?.();
-//     throw new Error(error?.message || 'Error');
-//   };
-
-//   beforeRequest?.();
-
-//   method = method || 'GET';
-
-//   const params = Object.assign(typeof data === 'function' ? data() : data ?? {}, {});
-
-//   return method === 'GET'
-//     ? request.get(url, { params, signal, onDownloadProgress }).then(successHandler, failHandler)
-//     : request.post(url, params, { headers, signal, onDownloadProgress }).then(successHandler, failHandler);
-// }
 
 
 

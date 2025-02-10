@@ -10,7 +10,6 @@ import { camelToSnake, snakeToCamel } from '@/utils/functions'
 export interface AuthState {
   token: string | undefined
   error: AuthError | null;
-  api: 'ChatGPTAPI' | 'ChatGPTUnofficialProxyAPI' | 'AlharaqApi'
   userAuth: API.UserAuth
 }
 
@@ -18,24 +17,18 @@ export const useAuthStore = defineStore('auth-store', {
   state: (): AuthState => ({
     token: getToken(),
     error: null,
-    api: 'AlharaqApi',
     userAuth: {
       firstName: '',
       lastName: '',
       email: '',
       password: '',
       reenteredPassword: '',
-      username: null
+      username: null,
+      role: null
     },
   }),
 
   getters: {
-    isChatGPTAPI(state): boolean {
-      return state.api === 'ChatGPTAPI'
-    },
-    isAlharaqApi(state): boolean {
-      return state.api === 'AlharaqApi'
-    },
 
   },
 
@@ -177,7 +170,13 @@ export const useAuthStore = defineStore('auth-store', {
     },
     isAuthenticated(): boolean {
       const userStore = useUserStore()
-      return userStore.user !== null && userStore.session !== null;
+      return userStore.user !== null 
+      //&& userStore.session !== null;
+    },
+    isAdmin(): boolean {
+      const userStore = useUserStore()
+      return userStore.user?.role === 'admin'
+      //&& userStore.session !== null;
     },
 
     // async getSession() {

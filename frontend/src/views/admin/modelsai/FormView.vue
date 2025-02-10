@@ -4,7 +4,7 @@ import { FormInst, FormRules } from 'naive-ui';
 import { t } from '@/locales';
 import { useCompanyStore } from '@/store';
 import { useBasicLayout } from '@/hooks/useBasicLayout';
-import { getImageUrl } from '@/utils/supabasehelper';
+import { getImageUrl } from '@/utils/supabaseHelper';
 import { BaseInput, BaseSelect, BaseSwitch, BaseInputNumber } from '@/components/common';
 const { isMobile } = useBasicLayout();
 const span = computed(() => (isMobile ? 24 : 12));
