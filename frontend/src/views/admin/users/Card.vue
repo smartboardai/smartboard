@@ -5,7 +5,7 @@ import { NTooltip, NAvatar, NBadge, NEllipsis } from 'naive-ui'
 
 import defaultavatarAdmin from '@/assets/supportIcon.png'
 import defaultavatarClient from '@/assets/boy.png'
-import defaultavatarAgri from '@/assets/gardener.png'
+import defaultavatarInstructor from '@/assets/instructor.png'
 
 import { SvgIcon } from '@/components/common';
 
@@ -23,7 +23,7 @@ const fullUrlImage = computed(() => {
       case 'student':
         return defaultavatarClient
       case 'instructor':
-        return defaultavatarAgri
+        return defaultavatarInstructor
       case 'admin':
         return defaultavatarAdmin
       default:
