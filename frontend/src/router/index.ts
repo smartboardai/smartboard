@@ -140,7 +140,24 @@ const routes: RouteRecordRaw[] = [
       //   name: 'country',
       //   component: () => import('@/views/admin/country/index.vue'),
       // },
-   
+      {
+        path: '/admin/submit-question',
+        name: 'submit-question',
+        component: () => import('@/views/admin/questions/Submit.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: '/admin/list-questions', 
+        name: 'list-questions',
+        component: () => import('@/views/admin/questions/List.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: '/admin/questions/:id',
+        name: 'question-details',
+        component: () => import('@/views/admin/questions/Details.vue'),
+        meta: { requiresAuth: true },
+      },
    
    
     ],

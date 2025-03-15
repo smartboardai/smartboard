@@ -158,6 +158,30 @@ export default {
     intermediateRegionCode: 'Intermediate Region Code',
     selectCountry: 'Select Country',
 
+    questions: 'Questions',
+    submitNewQuestion: 'Submit New Question',
+    listQuestions: 'List Questions',
+    title: 'Title',
+    content: 'Content',
+    category: 'Category',
+    titleRequired: 'Title is required',
+    contentRequired: 'Content is required',
+    submit: 'Submit',
+    cancel: 'Cancel',
+    submitSuccess: 'Question submitted successfully',
+    submitFailed: 'Failed to submit question',
+    confirmDelete: 'Confirm Delete',
+    deleteConfirmMessage: 'Are you sure you want to delete this question?',
+
+    uploadSuccess: 'File uploaded successfully',
+    uploadFile: 'Upload File',
+    attachments: 'Attachments',
+    categoryRequired: 'Category is required',
+    view: 'View',
+    back: 'Back',
+    answers: 'Answers',
+    submitAnswer: 'Submit Answer',
+    writeYourAnswer: 'Write your answer here...'
   },
   chat: {
     newChatButton: 'New Chat',
@@ -402,11 +426,7 @@ versionApp: "App Version",
     },
     securityNote:
       'Unfortunately, the transmission of information via the internet is not completely secure. Although we will do our best to protect your personal data, we cannot guarantee the security of your data transmitted to our site; any transmission is at your own risk. Once we have received your information, we will use strict procedures and security features to try to prevent unauthorized access.',
-    yourRights: {
-      title: 'Your rights – access to your personal data',
-      content:
-        'You have the right to ensure that your personal data is being processed lawfully (“Subject Access Right”). Your subject access right can be exercised in accordance with data protection laws and regulations. Any subject access request must be made in writing to [insert contact details]. We will provide your personal data to you within the statutory time frames. To enable us to trace any of your personal data that we may be holding, we may need to request further information from you. If you complain about how we have used your information, you have the right to complain to the Information Commissioner’s Office (ICO).',
-    },
+
     changesToPrivacyPolicy: {
       title: 'Changes to our privacy policy',
       content:

@@ -8,7 +8,7 @@ const service = applyCaseMiddleware(axios.create({
 
 service.interceptors.request.use(
   (config) => {
-    const token = ''//useAuthStore().token
+    const token = useAuthStore().token
     if (token)
       config.headers.Authorization = `Bearer ${token}`
     return config

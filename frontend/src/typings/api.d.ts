@@ -1,5 +1,33 @@
 declare namespace API {
 
+  interface Question {
+    id: string
+    title: string
+    content: string
+    category: string
+    createdAt: string
+    updatedAt: string
+    userId: string
+    files: File[]
+  }
+  
+   interface QuestionMedia {
+    id: string
+    questionId: string
+    file: string
+    fileType: string
+    createdAt: string
+  }
+  
+   interface Answer {
+    id: string
+    content: string
+    questionId: string
+    userId: string
+    createdAt: string
+    updatedAt: string
+  }
+
   type inputOutputData = 'Text' | 'Image' | 'Audio' | 'Video' | 'Documents'
 
   type role  = 'client'  | 'admin' | 'student' | 'instructor';

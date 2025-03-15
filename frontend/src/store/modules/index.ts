@@ -5,7 +5,7 @@ export * from './users'
 export * from './prompt'
 export * from './settings'
 export * from './auth'
-
+export * from './questions'
 
 export * from './util'
 // export * from './admin'

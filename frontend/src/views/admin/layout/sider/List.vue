@@ -102,7 +102,14 @@ async function handleUpdateValue(key: string, item: MenuOption) {
       handleFinish()
       break 
       
-      
+      case 'submit-question':
+        await router.push({ name: 'submit-question' });
+        handleFinish()
+        break
+      case 'list-questions':
+        await router.push({ name: 'list-questions' });
+        handleFinish()
+        break
   }
 
 }
@@ -140,6 +147,23 @@ const menuOptions: MenuOption[] = [
         label: t('common.admins'),
         key: 'admins',
         icon: iconRender({ icon: 'eos-icons:admin' }),
+      }
+    ]
+  },
+  {
+    type: 'group',
+    label: t('common.Questions'),
+    key: 'questions-management',
+    children: [
+      {
+        label: t('common.submitNewQuestion'),
+        key: 'submit-question',
+        icon: iconRender({ icon: 'mdi:plus-circle' }),
+      },
+      {
+        label: t('common.listQuestions'),
+        key: 'list-questions',
+        icon: iconRender({ icon: 'mdi:format-list-bulleted' }),
       }
     ]
   },
