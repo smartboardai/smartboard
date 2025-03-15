@@ -20,7 +20,7 @@ service.interceptors.request.use(
 
 service.interceptors.response.use(
   (response: AxiosResponse): AxiosResponse => {
-    if (response.status === 200 || response.status === 201)
+    if (response.status === 200 || response.status === 201 || response.status === 204)
       return response
 
     throw new Error(response.status.toString())

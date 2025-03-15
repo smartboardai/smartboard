@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth-store', {
 
   actions: {
 
-    async signUp(userData: API.UserAuth): Promise<void> {
+    async signUp(userData: API.UserAuth, type?:string): Promise<void> {
       try {
         if (!userData.username  || !userData.email || !userData.password || !userData.password) {
           throw new Error('Email, password, and password confirmation are required');
@@ -42,6 +42,7 @@ export const useAuthStore = defineStore('auth-store', {
 
         const snakeData = camelToSnake(userData);
         snakeData.password2 = userData.password
+        snakeData.role = userData.role || 'student'
         const { data, error } = await post({
           url: 'users/register/',
           data: snakeData,
@@ -52,6 +53,13 @@ export const useAuthStore = defineStore('auth-store', {
           throw error;
         }
 
+        if (data && !type) {
+          console.log('User logged in successfully:', data);
+          setToken(data.token);
+          const userStore = useUserStore();
+          userStore.updateUserState({ user: data.user, session: data.session });
+          this.error = null;
+        }
         console.log('User registered successfully:', data);
         this.error = null;
       } catch (error) {
@@ -141,9 +149,9 @@ export const useAuthStore = defineStore('auth-store', {
         //   throw error;
         // }
         const userStore = useUserStore()
-        const chatStore = useChatStore()
+        // const chatStore = useChatStore()
         userStore.resetUserState()
-        chatStore.resetChatState()
+        // chatStore.resetChatState()
       } catch (error) {
         this.error = error as AuthError;
         throw error;
@@ -170,6 +178,7 @@ export const useAuthStore = defineStore('auth-store', {
     },
     isAuthenticated(): boolean {
       const userStore = useUserStore()
+      console.log("userStore.user", userStore.user)
       return userStore.user !== null 
       //&& userStore.session !== null;
     },

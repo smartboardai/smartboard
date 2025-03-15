@@ -171,9 +171,11 @@ async function addUser() {
   try {
     model.value.userType = props.userType
     model.value.avatarUrl = ''
-    await authStore.signUp(
-      model.value
-    );
+    model.value.role = props.userType
+    // await authStore.signUp(
+    //   model.value, 'added'
+    // );
+    await userStore.insertDataAction(model.value);
     loading.value = false;
     userStore.showAdd = false;
     message.success(t('commn.addSuccess'));
@@ -235,7 +237,7 @@ formRef.value?.validate((errors: Array<FormValidationError> | undefined) => {
         <NGrid
     
         >
-          <NFormItemGi
+          <!-- <NFormItemGi
             :span="span"
             path="image"
             :label="t('common.image')"
@@ -252,7 +254,7 @@ formRef.value?.validate((errors: Array<FormValidationError> | undefined) => {
               :custom-request="customRequest"
             >
             </NUpload>
-          </NFormItemGi>
+          </NFormItemGi> -->
           <NFormItemGi
             :span="span"
             path="firstName"
@@ -278,6 +280,13 @@ formRef.value?.validate((errors: Array<FormValidationError> | undefined) => {
             />
           </NFormItemGi>
      
+          <NFormItemGi :span="span" path="username" :label="t('auth.username')">
+                <NInput v-model:value="model.username" placeholder="Username" >
+                  <template #prefix>
+                    <SvgIcon icon="ic:baseline-person" class="text-md text-primary" />
+                  </template>
+                </NInput>
+              </NFormItemGi>
 
                 <NFormItemGi
                  :span="span"
@@ -352,7 +361,7 @@ formRef.value?.validate((errors: Array<FormValidationError> | undefined) => {
                     </NInput>
 
                 </NFormItemGi>
-          <NFormItemGi
+          <!-- <NFormItemGi
             :span="span"
             path="gender"
             :label="t('common.gender')"
@@ -381,8 +390,8 @@ formRef.value?.validate((errors: Array<FormValidationError> | undefined) => {
             >
               <NButton>{{ t('common.country') }}</NButton>
             </NSelect>
-          </NFormItemGi>
-
+          </NFormItemGi> -->
+<!-- 
           <NFormItemGi
             :span="span"
             path="state"
@@ -392,7 +401,7 @@ formRef.value?.validate((errors: Array<FormValidationError> | undefined) => {
               v-model:value="model.state as boolean"
               size="large"
             />
-          </NFormItemGi>
+          </NFormItemGi> -->
 
         </NGrid>
       </div>

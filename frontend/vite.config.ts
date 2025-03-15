@@ -53,8 +53,8 @@ function setupPlugins(env: ImportMetaEnv): PluginOption[] {
     Components({
       resolvers: [NaiveUiResolver()]
     }),
-    Terminal(),
-    // Terminal({console: 'terminal'}),
+    // Terminal(),
+    Terminal({console: 'terminal'}),
     
   ]
 }

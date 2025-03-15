@@ -5,7 +5,9 @@ import {
   fetchData, deleteData, updateData, insertData
 } from './helper';
 import { useUserStore } from '@/store';
-import { fetchDataFromTable, getImageUrl, updateDataInTable } from '@/utils/apiHelper';
+import { fetchDataFromTable, getImageUrl, updateDataInTable , deleteDataFromTable} from '@/utils/apiHelper';
+import post from '@/utils/request';
+import { camelToSnake } from '@/utils/functions';
 export function initState(): API.UserData {
   const userStore = useUserStore()
   // const user_id: string = userStore.userInfo!.user!.id!;
@@ -27,7 +29,7 @@ export function initState(): API.UserData {
 
   }
 }
-const tableName = 'users';
+const tableName = '/users/users';
 
 export const useUsersStore = defineStore('users-store', {
   state: () => ({
@@ -103,18 +105,29 @@ export const useUsersStore = defineStore('users-store', {
         throw error;
       }
     },
-    async insertDataAction(newUniversity: API.UserData): Promise<void> {
+    async insertDataAction(userData: API.UserData): Promise<void> {
       try {
-        const insertedData = await insertData(newUniversity);
+        const snakeData = camelToSnake(userData);
+        snakeData.password2 = userData.password
+        snakeData.role = userData.role || 'student'
+        const { data, error } = await post({
+          url: 'users/register/',
+          data: snakeData,
+          method: 'POST',
+        });
 
-        this.listUsers = [insertedData, ...this.listUsers];
+        if (error) {
+          throw error;
+        }
+
+        this.listUsers = [data, ...this.listUsers];
       } catch (error: any) {
         throw error;
       }
     },
     async deleteDataAction(id: string): Promise<void> {
       try {
-        await deleteData(id);
+        await deleteDataFromTable('/users' , id);
         const index = this.listUsers.findIndex((university) => university.id === id);
         if (index !== -1) {
           this.listUsers.splice(index, 1);

@@ -18,6 +18,13 @@ export default {
   },
 
   common: {
+    students:'Students',
+    instructors:'Instructors',
+    admins:'Admins',
+    AICompanies:'AI Companies',
+    AIModels:'AI Models',
+    Questions:'Questions',
+    username:'Username',
     male: 'Male',   
     female: 'Female', 
     other: 'Other' ,

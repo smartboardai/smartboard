@@ -228,7 +228,7 @@ const genderOptions = [
         :span="span" 
         :x-gap="24"
         >
-          <NFormItemGi
+          <!-- <NFormItemGi
             :span="span"
              path="avatarUrl"
             :label="t('common.logoUrl')"
@@ -243,7 +243,7 @@ const genderOptions = [
               :custom-request="customRequest"
             >
             </NUpload>
-          </NFormItemGi>
+          </NFormItemGi> -->
           <NFormItemGi
             :span="span"
             path="firstName"
@@ -346,7 +346,7 @@ const genderOptions = [
                     </NInput>
 
                 </NFormItemGi> -->
-          <NFormItemGi
+          <!-- <NFormItemGi
             :span="span"
             path="gender"
             :label="t('common.gender')"
@@ -376,9 +376,9 @@ const genderOptions = [
             >
               <NButton>{{ t('common.country') }}</NButton>
             </NSelect>
-          </NFormItemGi>
+          </NFormItemGi> -->
 
-          <NFormItemGi
+          <!-- <NFormItemGi
             :span="span"
             path="state"
             :label="t('common.state')"
@@ -388,7 +388,7 @@ const genderOptions = [
               v-model:value="model.state as boolean"
               size="large"
             />
-          </NFormItemGi>
+          </NFormItemGi> -->
 
         </NGrid>
       </div>

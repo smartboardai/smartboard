@@ -99,7 +99,7 @@ export function put<T = any>({
   afterRequest,
 }: HttpOption): Promise<T> {
   return http<T>({
-    url,
+    url: url.endsWith('/') ? url : `${url}/`,
     method,
     data,
     headers,

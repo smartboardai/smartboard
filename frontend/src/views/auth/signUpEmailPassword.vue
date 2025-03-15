@@ -159,6 +159,7 @@ async function signUp() {
     loading.value = true;
       await authStore.signUp(model.value);
     loading.value = false;
+    await router.push('/admin');
     // showOTP.value = true;
   } catch (error: any) {
     loading.value = false;

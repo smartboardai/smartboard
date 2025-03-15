@@ -36,3 +36,4 @@ coverage
 /service/.env
 # Trash
 etc
+.env

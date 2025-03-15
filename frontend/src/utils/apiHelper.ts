@@ -56,7 +56,7 @@ export const deleteDataFromTable = async (tableName: string, id: string): Promis
   try {
     console.log(`Deleting data from ${tableName}, ID: ${id}`);
     await del({
-      url: `${tableName}/${id}`, 
+      url: `${tableName}/${id}/`, 
       method: 'DELETE',
     });
     console.log(`Data deleted successfully from ${tableName}`);

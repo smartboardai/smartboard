@@ -14,7 +14,7 @@ import {
   GridComponent
 } from "echarts/components"
 import VChart from "vue-echarts"
-
+import signOut from '@/views/auth/signOut.vue'
 // Register ECharts components
 use([
   CanvasRenderer,
@@ -40,8 +40,8 @@ const cardItems = [
   { title: t('common.AICompanies'), count: () => dashboardStore.aiCompanyCount, icon: 'mdi:domain' },
   { title: t('common.AIModels'), count: () => dashboardStore.aiModelCount, icon: 'mdi:robot' },
   { title: t('common.Questions'), count: () => dashboardStore.questionCount, icon: 'mdi:help-circle' },
-  { title: t('common.convAI'), count: () => dashboardStore.convAICount, icon: 'hugeicons:ai-chat-02' },
-  { title: t('common.convExperts'), count: () => dashboardStore.convExpertCount, icon: 'mdi:chat-processing' },
+  // { title: t('common.convAI'), count: () => dashboardStore.convAICount, icon: 'hugeicons:ai-chat-02' },
+  // { title: t('common.convExperts'), count: () => dashboardStore.convExpertCount, icon: 'mdi:chat-processing' },
 ]
 
 // Chart options
@@ -146,7 +146,7 @@ onMounted(async () => {
     <h1 class="font-bold mb-4 gtext" :class="{ 'text-xl': isMobile, 'text-2xl': !isMobile }">
       {{ t('common.Dashboard') }}
     </h1>
-
+<signOut/>
      <!-- Charts Section -->
      <NGrid :x-gap="isMobile ? 8 : 12" :y-gap="isMobile ? 8 : 12" :cols="isMobile ? 1 : 2" class="mt-4">
         <!-- User Growth Trend Chart -->
