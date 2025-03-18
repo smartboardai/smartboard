@@ -9,13 +9,15 @@ import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 
 function setupPlugins(env: ImportMetaEnv): PluginOption[] {
+  const isDevelopment = process.env.NODE_ENV === 'development'
+  
   return [
     vue(),
     env.VITE_GLOB_APP_PWA === 'true' && VitePWA({
       injectRegister: 'auto',
       manifest: {
-        name: 'SmartBoard AI',
-        short_name: 'SmartBoard-AI',
+        name: 'Telegram auto',
+        short_name: 'telegram-auto',
         icons: [
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
           { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
@@ -53,10 +55,9 @@ function setupPlugins(env: ImportMetaEnv): PluginOption[] {
     Components({
       resolvers: [NaiveUiResolver()]
     }),
-    // Terminal(),
-    Terminal({console: 'terminal'}),
-    
-  ]
+    // Only enable Terminal plugin in development mode
+    isDevelopment && Terminal({console: 'terminal'}),
+  ].filter(Boolean)
 }
 
 export default defineConfig((env) => {
