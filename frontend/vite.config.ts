@@ -8,6 +8,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 
+
 function setupPlugins(env: ImportMetaEnv): PluginOption[] {
   const isDevelopment = process.env.NODE_ENV === 'development'
   
@@ -16,8 +17,8 @@ function setupPlugins(env: ImportMetaEnv): PluginOption[] {
     env.VITE_GLOB_APP_PWA === 'true' && VitePWA({
       injectRegister: 'auto',
       manifest: {
-        name: 'Telegram auto',
-        short_name: 'telegram-auto',
+        name: 'SmartBoard AI',
+        short_name: 'SmartBoard-AI',
         icons: [
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
           { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
@@ -59,7 +60,6 @@ function setupPlugins(env: ImportMetaEnv): PluginOption[] {
     isDevelopment && Terminal({console: 'terminal'}),
   ].filter(Boolean)
 }
-
 export default defineConfig((env) => {
   const viteEnv = loadEnv(env.mode, process.cwd()) as unknown as ImportMetaEnv
 
