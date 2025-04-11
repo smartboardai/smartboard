@@ -41,11 +41,12 @@ export const useQuestionsStore = defineStore('questions-store', {
 
     async getQuestionById(id: string) {
       try {
-        const { data, error } = await get({
+        const  data = await get({
           url: `discussions/questions/${id}/`
         })
 
-        if (error) throw error
+       
+        console.log("data11", data)
         return data
       } catch (error: any) {
         throw error

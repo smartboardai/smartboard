@@ -1,14 +1,19 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onBeforeUnmount } from 'vue'
 import { useMessage } from 'naive-ui'
+import { useRouter } from 'vue-router'
 import { t } from '@/locales'
 import { BaseUpload } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
-import { FormInst, FormRules } from 'naive-ui'
+import { FormInst, FormRules, UploadFileInfo } from 'naive-ui'
 import { post } from '@/utils/request'
 import { useUserStore } from '@/store'
+import axios from 'axios'
+import { baseURL } from '@/utils/request/axios'
+import { NImage } from 'naive-ui'
 
 const message = useMessage()
+const router = useRouter()
 const formRef = ref<FormInst | null>(null)
 const loading = ref(false)
 const { isMobile } = useBasicLayout()
@@ -17,11 +22,13 @@ const userStore = useUserStore()
 const span = computed(() => isMobile ? 24 : 12)
 
 const model = ref({
-  title: '',
-  content: '',
-  category: '',
+  title: ' what is the capital of france',
+  content: 'what is the capital of france',
+  category: 'general',
   files: [] as File[]
 })
+
+const fileList = ref<UploadFileInfo[]>([])
 
 const rules: FormRules = {
   title: {
@@ -47,9 +54,25 @@ const categoryOptions = [
   { label: t('common.other'), value: 'other' }
 ]
 
-const handleUploadSuccess = (file: File) => {
-  model.value.files.push(file)
-  message.success(t('common.uploadSuccess'))
+const isImageFile = (file: File) => {
+  return file.type.startsWith('image/')
+}
+
+const handleUploadChange = ({ file }: { file: UploadFileInfo }) => {
+  if (file.file) {
+    const MAX_SIZE = 10 * 1024 * 1024 // 10MB
+    if (file.file.size > MAX_SIZE) {
+      message.error(t('common.fileTooLarge'))
+      return
+    }
+
+    if (isImageFile(file.file)) {
+      file.url = URL.createObjectURL(file.file)
+    }
+
+    model.value.files.push(file.file)
+    fileList.value.push(file)
+  }
 }
 
 async function handleSubmit(e: MouseEvent) {
@@ -68,37 +91,46 @@ async function handleSubmit(e: MouseEvent) {
     formData.append('title', model.value.title)
     formData.append('content', model.value.content)
     formData.append('category', model.value.category)
-    formData.append('user_id', userStore.user.id)
     
-    // Append each file to the FormData
-    model.value.files.forEach((file) => {
+    if (userStore.user && userStore.user.id) {
+      formData.append('user_id', userStore.user.id.toString())
+    }
+    
+    model.value.files.forEach((file, index) => {
       formData.append('files', file)
     })
 
-    const { data, error } = await post({
-      url: 'discussions/questions/',
-      data: formData,
+    const response = await axios.post((baseURL + 'discussions/questions/'), formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     })
 
-    if (error) throw error
-
     message.success(t('common.submitSuccess'))
     loading.value = false
+    router.push(`/admin/questions/${response.data.id}`)
+    
     model.value = {
       title: '',
       content: '',
-      category: '',
+      category: 'general',
       files: []
     }
+    fileList.value = []
   }
   catch (error: any) {
     loading.value = false
     message.error(error.message || t('common.submitFailed'))
   }
 }
+
+onBeforeUnmount(() => {
+  fileList.value.forEach(file => {
+    if (file.url && file.url.startsWith('blob:')) {
+      URL.revokeObjectURL(file.url)
+    }
+  })
+})
 </script>
 
 <template>
@@ -140,7 +172,10 @@ async function handleSubmit(e: MouseEvent) {
             accept="*"
             multiple
             :max="5"
+            :file-list="fileList"
             @change="handleUploadChange"
+            :show-file-list="true"
+          
           >
             <NButton>{{ t('common.uploadFile') }}</NButton>
           </NUpload>
@@ -148,7 +183,7 @@ async function handleSubmit(e: MouseEvent) {
       </NGrid>
 
       <div class="flex justify-end gap-2 mt-4">
-        <NButton @click="$router.back()">
+        <NButton @click="router.back()">
           {{ t('common.cancel') }}
         </NButton>
         <NButton 

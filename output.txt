@@ -1,0 +1,334 @@
+.
+├── backend
+│   ├── apps
+│   │   ├── analytics
+│   │   │   ├── admin.py
+│   │   │   ├── apps.py
+│   │   │   ├── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── serializers.py
+│   │   │   ├── tasks.py
+│   │   │   ├── tests.py
+│   │   │   ├── urls.py
+│   │   │   ├── utils.py
+│   │   │   └── views.py
+│   │   ├── discussions
+│   │   │   ├── admin.py
+│   │   │   ├── apps.py
+│   │   │   ├── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── serializers.py
+│   │   │   ├── tasks.py
+│   │   │   ├── tests.py
+│   │   │   ├── urls.py
+│   │   │   ├── utils.py
+│   │   │   └── views.py
+│   │   ├── gamification
+│   │   │   ├── admin.py
+│   │   │   ├── apps.py
+│   │   │   ├── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── serializers.py
+│   │   │   ├── tasks.py
+│   │   │   ├── tests.py
+│   │   │   ├── urls.py
+│   │   │   ├── utils.py
+│   │   │   └── views.py
+│   │   ├── moderation
+│   │   │   ├── admin.py
+│   │   │   ├── apps.py
+│   │   │   ├── __init__.py
+│   │   │   ├── models.py
+│   │   │   ├── serializers.py
+│   │   │   ├── tasks.py
+│   │   │   ├── tests.py
+│   │   │   ├── urls.py
+│   │   │   ├── utils.py
+│   │   │   └── views.py
+│   │   └── users
+│   │       ├── admin.py
+│   │       ├── apps.py
+│   │       ├── __init__.py
+│   │       ├── models.py
+│   │       ├── serializers.py
+│   │       ├── tests.py
+│   │       ├── urls.py
+│   │       └── views.py
+│   ├── config
+│   │   ├── asgi.py
+│   │   ├── __init__.py
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── db.sqlite3
+│   ├── docker-compose.yml
+│   ├── Dockerfile
+│   ├── info.txt
+│   ├── manage.py
+│   ├── README.md
+│   ├── requirements.txt
+│   ├── run.sh
+│   └── s.sh
+├── Dockerfile
+├── d.sh
+├── e.html
+├── frontend
+│   ├── auto-imports.d.ts
+│   ├── components.d.ts
+│   ├── d.sh
+│   ├── index.html
+│   ├── package.json
+│   ├── pnpm-lock.yaml
+│   ├── postcss.config.js
+│   ├── public
+│   │   ├── logo.png
+│   │   ├── pwa-192x192.png
+│   │   └── pwa-512x512.png
+│   ├── README.md
+│   ├── run.sh
+│   ├── src
+│   │   ├── api
+│   │   │   ├── app
+│   │   │   │   └── index.ts
+│   │   │   ├── chat
+│   │   │   │   ├── image.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── models.ts
+│   │   │   │   └── text.ts
+│   │   │   └── index.ts
+│   │   ├── App.vue
+│   │   ├── assets
+│   │   │   ├── avatar.jpg
+│   │   │   ├── boy.png
+│   │   │   ├── errorImage.png
+│   │   │   ├── gardener.png
+│   │   │   ├── Google.png
+│   │   │   ├── hero.svg
+│   │   │   ├── instructor.png
+│   │   │   ├── logo_ai_chat.png
+│   │   │   ├── logo.png
+│   │   │   ├── Meta.png
+│   │   │   ├── Microsoft.png
+│   │   │   ├── OpenAI.png
+│   │   │   ├── supportIcon.png
+│   │   │   └── textGen.png
+│   │   ├── components
+│   │   │   ├── common
+│   │   │   │   ├── BaseActionForm
+│   │   │   │   │   └── index.vue
+│   │   │   │   ├── Dashboard
+│   │   │   │   │   └── Header.vue
+│   │   │   │   ├── DataTableBase
+│   │   │   │   │   └── index.vue
+│   │   │   │   ├── Footer
+│   │   │   │   │   └── index.vue
+│   │   │   │   ├── FormElements
+│   │   │   │   │   ├── BaseInputNumber.vue
+│   │   │   │   │   ├── BaseInput.vue
+│   │   │   │   │   ├── BaseSelect.vue
+│   │   │   │   │   ├── BaseSwitch.vue
+│   │   │   │   │   └── BaseUpload.vue
+│   │   │   │   ├── HoverButton
+│   │   │   │   │   ├── Button.vue
+│   │   │   │   │   └── index.vue
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── LanguageSelect
+│   │   │   │   │   └── index.vue
+│   │   │   │   ├── LoadingIcon
+│   │   │   │   │   └── index.vue
+│   │   │   │   ├── LogoApp
+│   │   │   │   │   └── index.vue
+│   │   │   │   ├── LogoUser
+│   │   │   │   │   └── index.vue
+│   │   │   │   ├── MainHeader
+│   │   │   │   │   └── index.vue
+│   │   │   │   ├── NaiveProvider
+│   │   │   │   │   └── index.vue
+│   │   │   │   ├── PromptStore
+│   │   │   │   │   └── index.vue
+│   │   │   │   ├── SelectCountry
+│   │   │   │   │   └── index.vue
+│   │   │   │   ├── Setting
+│   │   │   │   │   ├── About.vue
+│   │   │   │   │   ├── Advanced.vue
+│   │   │   │   │   ├── General.vue
+│   │   │   │   │   ├── index.vue
+│   │   │   │   │   └── Profile.vue
+│   │   │   │   ├── Sider
+│   │   │   │   │   └── Footer.vue
+│   │   │   │   ├── SvgIcon
+│   │   │   │   │   └── index.vue
+│   │   │   │   ├── TypeText.vue
+│   │   │   │   └── UserAvatar
+│   │   │   │       └── index.vue
+│   │   │   └── custom
+│   │   │       ├── GithubSite.vue
+│   │   │       ├── index.ts
+│   │   │       └── Profile.vue
+│   │   ├── hooks
+│   │   │   ├── useBasicLayout.ts
+│   │   │   ├── useIconRender.ts
+│   │   │   ├── useLanguage.ts
+│   │   │   └── useTheme.ts
+│   │   ├── icons
+│   │   │   ├── 403.vue
+│   │   │   ├── 404.svg
+│   │   │   └── 500.vue
+│   │   ├── lib
+│   │   │   └── utils.ts
+│   │   ├── locales
+│   │   │   ├── ar-DZ.ts
+│   │   │   ├── en-US.ts
+│   │   │   └── index.ts
+│   │   ├── main.ts
+│   │   ├── plugins
+│   │   │   ├── assets.ts
+│   │   │   ├── index.ts
+│   │   │   └── scrollbarStyle.ts
+│   │   ├── router
+│   │   │   ├── index.ts
+│   │   │   └── permission.ts
+│   │   ├── store
+│   │   │   ├── helper.ts
+│   │   │   ├── index.ts
+│   │   │   └── modules
+│   │   │       ├── admin
+│   │   │       │   └── index.ts
+│   │   │       ├── app
+│   │   │       │   ├── helper.ts
+│   │   │       │   └── index.ts
+│   │   │       ├── auth
+│   │   │       │   ├── helper.ts
+│   │   │       │   └── index.ts
+│   │   │       ├── baseStore.ts
+│   │   │       ├── chat
+│   │   │       │   ├── helper.ts
+│   │   │       │   └── index.ts
+│   │   │       ├── companyai.ts
+│   │   │       ├── country.ts
+│   │   │       ├── dashboard
+│   │   │       │   └── index.ts
+│   │   │       ├── index.ts
+│   │   │       ├── modelsai.ts
+│   │   │       ├── prompt
+│   │   │       │   ├── helper.ts
+│   │   │       │   └── index.ts
+│   │   │       ├── questions
+│   │   │       │   ├── helper.ts
+│   │   │       │   └── index.ts
+│   │   │       ├── settings
+│   │   │       │   ├── helper.ts
+│   │   │       │   └── index.ts
+│   │   │       ├── user
+│   │   │       │   ├── helper.ts
+│   │   │       │   └── index.ts
+│   │   │       ├── users
+│   │   │       │   ├── helper.ts
+│   │   │       │   └── index.ts
+│   │   │       └── util
+│   │   │           └── index.ts
+│   │   ├── styles
+│   │   │   ├── global.less
+│   │   │   └── lib
+│   │   │       ├── github-markdown.less
+│   │   │       ├── highlight.less
+│   │   │       └── tailwind.css
+│   │   ├── typings
+│   │   │   ├── api.d.ts
+│   │   │   ├── chat.d.ts
+│   │   │   ├── env.d.ts
+│   │   │   ├── global.d.ts
+│   │   │   └── publicApp.d.ts
+│   │   ├── utils
+│   │   │   ├── apiHelper.ts
+│   │   │   ├── copy.ts
+│   │   │   ├── db
+│   │   │   │   └── index.ts
+│   │   │   ├── functions
+│   │   │   │   ├── debounce.ts
+│   │   │   │   └── index.ts
+│   │   │   ├── is
+│   │   │   │   └── index.ts
+│   │   │   ├── request
+│   │   │   │   ├── axios.ts
+│   │   │   │   └── index.ts
+│   │   │   ├── storage
+│   │   │   │   ├── index.ts
+│   │   │   │   └── localStorage.ts
+│   │   │   ├── supabaseHelper.ts
+│   │   │   └── supabase.ts
+│   │   └── views
+│   │       ├── admin
+│   │       │   ├── api
+│   │       │   │   └── index.vue
+│   │       │   ├── companyai
+│   │       │   │   ├── FormView.vue
+│   │       │   │   └── List.vue
+│   │       │   ├── dashboard
+│   │       │   │   ├── index.vue
+│   │       │   │   └── ListBase.vue
+│   │       │   ├── layout
+│   │       │   │   ├── index.ts
+│   │       │   │   ├── Layout.vue
+│   │       │   │   └── sider
+│   │       │   │       ├── index.vue
+│   │       │   │       ├── List.vue
+│   │       │   │       └── Tree.vue
+│   │       │   ├── modelsai
+│   │       │   │   ├── Card.vue
+│   │       │   │   ├── FormView.vue
+│   │       │   │   └── List.vue
+│   │       │   ├── profile
+│   │       │   │   └── index.vue
+│   │       │   ├── questions
+│   │       │   │   ├── Details.vue
+│   │       │   │   ├── List.vue
+│   │       │   │   └── Submit.vue
+│   │       │   ├── settings
+│   │       │   │   └── index.vue
+│   │       │   ├── settings_app
+│   │       │   │   ├── DashBoarsSettings.vue
+│   │       │   │   ├── EditPrivacyPolicy.vue
+│   │       │   │   ├── EditTermsOfUse.vue
+│   │       │   │   ├── index1.vue
+│   │       │   │   └── index.vue
+│   │       │   ├── themes
+│   │       │   │   ├── index.vue
+│   │       │   │   └── ThemeSection.vue
+│   │       │   ├── translation
+│   │       │   │   ├── index.vue
+│   │       │   │   └── TranslationSection.vue
+│   │       │   └── users
+│   │       │       ├── Add.vue
+│   │       │       ├── Card.vue
+│   │       │       ├── List.vue
+│   │       │       └── Update.vue
+│   │       ├── auth
+│   │       │   ├── index.ts
+│   │       │   ├── index.vue
+│   │       │   ├── Login.vue
+│   │       │   ├── OTP.vue
+│   │       │   ├── PolicyCollection.vue
+│   │       │   ├── PrivacyPolicy.vue
+│   │       │   ├── signOut.vue
+│   │       │   ├── signUpEmailPassword.vue
+│   │       │   ├── signUp.vue
+│   │       │   ├── TermsOfUse.vue
+│   │       │   └── t.vue
+│   │       ├── exception
+│   │       │   ├── 404
+│   │       │   │   └── index.vue
+│   │       │   └── 500
+│   │       │       └── index.vue
+│   │       └── home
+│   │           ├── Hero.vue
+│   │           └── index.vue
+│   ├── tailwind.config.js
+│   ├── tsconfig.json
+│   └── vite.config.ts
+├── LICENSE
+├── output.txt
+├── README.md
+└── tree.sh
+
+85 directories, 247 files

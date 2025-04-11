@@ -24,7 +24,13 @@ class RegisterView(generics.CreateAPIView):
             user = serializer.save()
             token, _ = Token.objects.get_or_create(user=user)
             return response_format(
-                data={"user": serializer.data, "token": token.key},
+                data={
+                    "user": {
+                        "id": user.id,
+                        **serializer.data
+                    },
+                    "token": token.key
+                },
                 status_code=status.HTTP_201_CREATED
             )
         return response_format(error=serializer.errors, status_code=status.HTTP_400_BAD_REQUEST)

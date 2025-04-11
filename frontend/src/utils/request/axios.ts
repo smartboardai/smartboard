@@ -4,6 +4,10 @@ import applyCaseMiddleware from 'axios-case-converter';
 export const baseURL = import.meta.env.VITE_GLOB_API_URL + import.meta.env.VITE_APP_API_BASE_URL; 
 const service = applyCaseMiddleware(axios.create({
   baseURL:baseURL,
+  timeout: 60000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 }))
 
 service.interceptors.request.use(
@@ -11,6 +15,11 @@ service.interceptors.request.use(
     const token = useAuthStore().token
     if (token)
       config.headers.Authorization = `Bearer ${token}`
+    if (config.data instanceof FormData) {
+      config.headers['Content-Type'] = 'multipart/form-data'
+    } else {
+      config.headers['Content-Type'] = 'application/json'
+    }
     return config
   },
   (error) => {

@@ -147,35 +147,7 @@ onMounted(async () => {
       {{ t('common.Dashboard') }}
     </h1>
 <signOut/>
-     <!-- Charts Section -->
-     <NGrid :x-gap="isMobile ? 8 : 12" :y-gap="isMobile ? 8 : 12" :cols="isMobile ? 1 : 2" class="mt-4">
-        <!-- User Growth Trend Chart -->
-        <NGridItem>
-          <NCard>
-            <NSkeleton v-if="isLoading" text :repeat="3" />
-            <v-chart
-              v-else
-              class="chart"
-              :option="userTrendOptions"
-              :autoresize="true"
-            />
-          </NCard>
-        </NGridItem>
-  
-        <!-- Conversation Trend Chart -->
-        <NGridItem>
-          <NCard>
-            <NSkeleton v-if="isLoading" text :repeat="3" />
-            <v-chart
-              v-else
-              class="chart"
-              :option="conversationTrendOptions"
-              :autoresize="true"
-            />
-          </NCard>
-        </NGridItem>
-      </NGrid>
-  
+   
       
       <!-- Stat Cards -->
       <NGrid class="mt-4" :x-gap="isMobile ? 8 : 12" :y-gap="isMobile ? 8 : 12" :cols="isMobile ? 1 : 2">

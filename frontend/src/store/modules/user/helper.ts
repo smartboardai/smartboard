@@ -5,9 +5,8 @@ const LOCAL_NAME = 'userStorage'
 
 
 export interface UserState {
-  user: User | null
+  user: API.CurrentUser | null
   session: Session | null
-  userMetaData: API.UserMetaData
   
 }
 
@@ -17,21 +16,7 @@ export function defaultSetting(): UserState {
   return {
     session: null,
     user: null,
-    userMetaData: {
-      avatar: '',
-      fristName: '',
-      description: '',
-      lastName: '',
-      avatarUrl: '',
-      dateOfBirth: '', 
-      state: true,
-      gender: 'male' ,
-      userType: 'admin', 
-      country: '',
-      createdAt: '', 
-      updatedAt: '', 
-    }
-   
+  
   }
 
 }

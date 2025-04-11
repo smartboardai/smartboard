@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { NMenu, NScrollbar, useLoadingBar } from 'naive-ui'
 import type { MenuInst, MenuOption } from 'naive-ui'
 import { useRouter } from 'vue-router'
@@ -7,6 +7,7 @@ import { useIconRender } from '@/hooks/useIconRender';
 import { t } from '@/locales';
 import { useBasicLayout } from '@/hooks/useBasicLayout';
 import { useAppStore } from '@/store';
+import { useAuthStore } from '@/store/modules/auth'
 const router = useRouter()
 const accordionRef = ref(false)
 const selectedKeyRef = ref('dashboard')
@@ -16,6 +17,13 @@ const loadingBar = useLoadingBar()
 const { isMobile } = useBasicLayout()
 const appStore = useAppStore()
 const disabledRef = ref(true)
+const authStore = useAuthStore()
+
+
+const userStore = useUserStore()
+
+
+const userInfo = computed(() => userStore.$state.user!!)
 function handleStart() {
   loadingBar.start()
   disabledRef.value = false
@@ -110,163 +118,100 @@ async function handleUpdateValue(key: string, item: MenuOption) {
         await router.push({ name: 'list-questions' });
         handleFinish()
         break
+    case 'ai-settings':
+      await router.push({ name: 'ai-settings' });
+      handleFinish()
+      break
   }
 
 }
 const accordion = accordionRef
 const selectedKey = selectedKeyRef
-const menuOptions: MenuOption[] = [
-  {
-    type: 'group',
-    label: t('common.dashboard'),
-    key: 'Dashboard',
-    children: [
-      {
-        label: t('common.dashboard'),
-        key: 'dashboard',
-        icon: iconRender({ icon: 'material-symbols:dashboard' }),
-      },]},
+const menuOptions = computed(() => {
+  const baseOptions: MenuOption[] = [
+    {
+      type: 'group',
+      label: t('common.dashboard'),
+      key: 'Dashboard',
+      children: [
+        {
+          label: t('common.dashboard'),
+          key: 'dashboard',
+          icon: iconRender({ icon: 'material-symbols:dashboard' }),
+        },
+      ]
+    }
+  ]
 
-      {
-    type: 'group',
-    label: t('common.userManagement'),
-    key: 'user-management',
-    children: [
-      {
-        label: t('common.students'),
-        key: 'students',
-        disabled: false,
-        icon: iconRender({ icon: 'mdi:users' }),
-      },
-      {
-        label: t('common.instructors'),
-        key: 'instructors',
-        icon: iconRender({ icon: 'mdi:account-student' }),
-      },
-      {
-        label: t('common.admins'),
-        key: 'admins',
-        icon: iconRender({ icon: 'eos-icons:admin' }),
-      }
-    ]
-  },
-  {
-    type: 'group',
-    label: t('common.Questions'),
-    key: 'questions-management',
-    children: [
-      {
-        label: t('common.submitNewQuestion'),
-        key: 'submit-question',
-        icon: iconRender({ icon: 'mdi:plus-circle' }),
-      },
-      {
-        label: t('common.listQuestions'),
-        key: 'list-questions',
-        icon: iconRender({ icon: 'mdi:format-list-bulleted' }),
-      }
-    ]
-  },
-  // {
-  //   type: 'group',
-  //   label: 'AI Settings',
-  //   key: 'public',
-    
-  //   children: [
-  //     {
-  //       label: t('common.companes'),
-  //       key: 'companyai',
-  //       icon: iconRender({ icon: 'hugeicons:ai-network' }),
-  //       disabled: true,
-  //     },
-  //     {
-  //       label: t('common.modelsai'),
-  //       key: 'modelsai',
-  //       icon: iconRender({ icon: 'arcticons:ask-ai' }),
-  //       disabled: true,
-  //     },
-  //     {
-  //       label: t('common.apiKeys'),
-  //       key: 'major',
-  //       disabled: false,
-  //       icon: iconRender({ icon: 'game-icons:house-keys' }),
-  //       disabled: true,
-  //     }
-  //   ],
-  // },
-  // {
-  //   type: 'group',
-  //   label: t('common.notifications'),
-  //   key: 'notification',
-  //   children: [
-  //     {
-  //       label: t('common.addNotification'),
-  //       key: 'notification',
-  //       icon: iconRender({ icon: 'ic:baseline-notification-add' }),
-  //     }
-  //   ],
-  // },
-  // {
-  //   type: 'group',
-  //   label: t('common.chatsManager'),
-  //   key: 'chats-user-ai',
-  //   children: [
-  //     {
-  //       label: t('common.chatsUser'),
-  //       key: 'chat',
-  //       icon: iconRender({ icon: 'bx:chat' }),
-  //     }
-  //   ],
-  // },
-  // {
-  //   type: 'group',
-  //   label: t('common.settings'),
-  //   key: 'settings',
-  //   children: [
-  //     {
-  //       label: t('common.settingsAPP'),
-  //       key: 'settingsapp',
-  //       icon: iconRender({ icon: 'mdi:settings-outline' }),
-  //     },
-  //     {
-  //       label: t('common.translation'),
-  //       key: 'translation',
-  //       icon: iconRender({ icon: 'mdi:translate' }),
-  //     },
-  //     {
-  //       label: t('common.themes'),
-  //       key: 'themes',
-  //       icon: iconRender({ icon: 'mdi:palette' }),
-  //     },
-  //     {
-  //       label: t('common.settings'),
-  //       key: 'settings',
-  //       icon: iconRender({ icon: 'mdi:cog-outline' }),
-  //     },
-  //     {
-  //       label: t('common.editTermsOfUse'),
-  //       key: 'edit-terms-of-use',
-  //       icon: iconRender({ icon: 'mdi:book-edit' }),
-  //     },
-  //     {
-  //       label: t('common.editPrivacyPolicy'),
-  //       key: 'edit-privacy-policy',
-  //       icon: iconRender({ icon: 'mdi:book-lock' }),
-  //     },
-  //     {
-  //       label: t('common.country'),
-  //       key: 'country',
-  //       icon: iconRender({ icon: 'mdi:world' }),
-  //     },
-  //     {
-  //       label: t('common.profile'),
-  //       key: 'profile',
-  //       icon: iconRender({ icon: 'gg:profile' }),
-  //     }
-  //   ],
-  // },
- 
-];
+  if (userInfo.value.role === 'admin') {
+    baseOptions.push({
+      type: 'group',
+      label: t('common.userManagement'),
+      key: 'user-management',
+      children: [
+        {
+          label: t('common.students'),
+          key: 'students',
+          disabled: false,
+          icon: iconRender({ icon: 'mdi:users' }),
+        },
+        {
+          label: t('common.instructors'),
+          key: 'instructors',
+          icon: iconRender({ icon: 'mdi:account-student' }),
+        },
+        {
+          label: t('common.admins'),
+          key: 'admins',
+          icon: iconRender({ icon: 'eos-icons:admin' }),
+        }
+      ]
+    })
+  }
+
+  baseOptions.push(
+    {
+      type: 'group',
+      label: t('common.Questions'),
+      key: 'questions-management',
+      children: [
+        {
+          label: t('common.submitNewQuestion'),
+          key: 'submit-question',
+          icon: iconRender({ icon: 'mdi:plus-circle' }),
+        },
+        {
+          label: t('common.listQuestions'),
+          key: 'list-questions',
+          icon: iconRender({ icon: 'mdi:format-list-bulleted' }),
+        }
+      ]
+    },
+    {
+      type: 'group',
+      label: t('common.settings'),
+      key: 'settings',
+      children: [
+        {
+          label: t('common.profile'),
+          key: 'profile',
+          icon: iconRender({ icon: 'gg:profile' }),
+        }
+      ],
+    }
+  )
+
+  if (userInfo.value.role === 'admin') {
+    baseOptions.push({
+      label: t('settings.aiSettings'),
+      key: 'ai-settings',
+      icon: iconRender({ icon: 'i-mdi-robot' }),
+      path: '/admin/ai-settings'
+    })
+  }
+
+  return baseOptions
+})
 
 
 const inverted = ref(false)

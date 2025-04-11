@@ -106,6 +106,7 @@ declare global {
   const useModelStore: typeof import('./src/store/modules/modelsai')['useModelStore']
   const useNotification: typeof import('naive-ui')['useNotification']
   const usePromptStore: typeof import('./src/store/modules/prompt/index')['usePromptStore']
+  const useQuestionsStore: typeof import('./src/store/modules/questions/index')['useQuestionsStore']
   const useSettingStore: typeof import('./src/store/modules/settings/index')['useSettingStore']
   const useSlots: typeof import('vue')['useSlots']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
@@ -228,6 +229,7 @@ declare module 'vue' {
     readonly useModelStore: UnwrapRef<typeof import('./src/store/modules/modelsai')['useModelStore']>
     readonly useNotification: UnwrapRef<typeof import('naive-ui')['useNotification']>
     readonly usePromptStore: UnwrapRef<typeof import('./src/store/modules/prompt/index')['usePromptStore']>
+    readonly useQuestionsStore: UnwrapRef<typeof import('./src/store/modules/questions/index')['useQuestionsStore']>
     readonly useSettingStore: UnwrapRef<typeof import('./src/store/modules/settings/index')['useSettingStore']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>

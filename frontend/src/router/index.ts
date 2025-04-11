@@ -158,6 +158,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/admin/questions/Details.vue'),
         meta: { requiresAuth: true },
       },
+      {
+        path: '/admin/ai-settings',
+        name: 'ai-settings',
+        component: () => import('@/views/admin/settings_app/AISettings.vue'),
+        meta: { requiresAuth: true },
+      },
    
    
     ],

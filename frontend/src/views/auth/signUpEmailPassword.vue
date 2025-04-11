@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useAuthStore } from '@/store'
 import { SvgIcon } from '@/components/common'
 import { isEmailValid } from '@/utils/functions/index'
-import OTP from './OTP.vue'
+
 import {
   FormInst,
   FormItemInst,
@@ -331,7 +331,7 @@ function validStep3(): boolean {
                   show-password-on="click"
                   @input="handleRePasswordInput"
                   type="password"
-                  :maxlength="20"
+                  :maxlength="50"
                   @keydown.enter.prevent
                 >
                   <template #prefix>
@@ -351,7 +351,7 @@ function validStep3(): boolean {
                   :disabled="!model.password"
                   show-password-on="click"
                   type="password"
-                  :maxlength="20"
+                  :maxlength="50"
                   @keydown.enter.prevent
                 >
                   <template #prefix>

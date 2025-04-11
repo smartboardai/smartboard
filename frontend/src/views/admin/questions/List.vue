@@ -46,13 +46,15 @@ async function handleDelete(questionId: string) {
 onMounted(() => {
   fetchQuestions()
 })
+const userStore = useUserStore()
+const userInfo = computed(() => userStore.$state.user!!)
 </script>
 
 <template>
   <div class="p-4">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-2xl font-bold">{{ t('common.Questions') }}</h2>
-      <NButton type="primary" @click="$router.push('/admin/submit-question')">
+      <NButton type="primary" @click="router.push('/admin/submit-question')">
         {{ t('common.submitNewQuestion') }}
       </NButton>
     </div>
@@ -81,7 +83,7 @@ onMounted(() => {
               <NButton size="small" @click="handleViewDetails(question.id)">
                 {{ t('common.view') }}
               </NButton>
-              <NButton size="small" type="error" @click="handleDelete(question.id)">
+              <NButton v-if="userStore.user?.role === 'admin'" size="small" type="error" @click="handleDelete(question.id)">
                 {{ t('common.delete') }}
               </NButton>
             </div>

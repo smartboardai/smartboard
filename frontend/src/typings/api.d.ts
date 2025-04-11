@@ -1,5 +1,15 @@
 declare namespace API {
+  type Roles  =  'admin' | 'student' | 'instructor';
 
+  interface CurrentUser  {
+    id: string
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+    username: string| null,
+    role: Roles| null
+  }
   interface Question {
     id: string
     title: string
@@ -30,7 +40,7 @@ declare namespace API {
 
   type inputOutputData = 'Text' | 'Image' | 'Audio' | 'Video' | 'Documents'
 
-  type role  = 'client'  | 'admin' | 'student' | 'instructor';
+
   type userGender  = 'male' | 'female' | 'other';
 
 
@@ -79,7 +89,7 @@ interface UserAuth {
     dateOfBirth?: string; 
     state?: boolean;
     gender?: userGender
-    userType?:role
+    userType?:Roles
     country?: string;
     email?:string
     password?:string

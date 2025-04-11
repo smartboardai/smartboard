@@ -3,6 +3,7 @@ from django.db import models
 
 class CustomUser(AbstractUser):
     ROLE_CHOICES = (
+        ('admin', 'Admin'),
         ('student', 'Student'),
         ('instructor', 'Instructor'),
     )

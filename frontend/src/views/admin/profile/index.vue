@@ -1,12 +1,7 @@
 <script setup lang='ts'>
 import {Profile} from '@/components/common'
 
-//   <!-- <div class="container_dashboard">
-//     <div class=" bg-blue-100 rounded-lg flex items-center justify-center">
-// <Profile/>
-// </div>
-//   </div> -->
-
+import signOut from '@/views/auth/signOut.vue'
   
 import { ref, h, VNodeChild, computed } from 'vue';
 import { NForm, NInput, NButton, FormInst,
@@ -22,21 +17,15 @@ import { supabase } from '@/utils/supabase';
 import { SvgIcon } from '@/components/common';
 import { isEmailValid } from '@/utils/functions';
 import { useBasicLayout } from '@/hooks/useBasicLayout';
-const folder: string = 'University';
-const bucket: string = 'profiles';
 
-interface Props {
-    userType: User.UserType
-}
-const props = defineProps<Props>()
-const userStore = useUserStore()
+
 const utilStore = useUtilStore()
 const message = useMessage();
 const formRef = ref<FormInst | null>(null);
 const loading = ref(false);
-
-const userInfo = computed(() => userStore.$state.userMetaData)
-const model = ref<API.UserMetaData>(userInfo.value);
+const userStore = useUserStore()
+const userInfo = computed(() => userStore.$state.user!!)
+const model = ref<API.CurrentUser>(userInfo.value);
 const { isMobile } = useBasicLayout()
 const span = computed(() => {
   return isMobile ? 24 : 12
@@ -62,60 +51,13 @@ const rules: FormRules =  {
 };
 
 
-const customRequest = async ({
-  file,
-  data: dataParams,
-  headers,
-  withCredentials,
-  action,
-  onFinish,
-  onError,
-  onProgress,
-}: UploadCustomRequestOptions) => {
-  try {
-    if (!dataParams) {
-  
-      throw new Error('dataParams is undefined');
-    }
-    
-    const progressEvent = { loaded: 20, total: 100 };
-    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-    onProgress({ percent: percentCompleted });
-    const { data, error } = await supabase
-      .storage
-      .from(dataParams.bucket)
-      .upload(`${dataParams.folder}/${file.name}`, file.file!, {
-        cacheControl: '3600',
-        upsert: false,
-      })
-    let percent = 10;
-    onProgress({ percent: Math.ceil(percent) })
-    if (error) {
-      if (error.statusCode === "409" && error.message === "Duplicate") {
-        model.value.avatarUrl = `${dataParams.folder}/${file.name}`
-        onFinish()
-      } else {
-        throw error;
-      }
-    }
-    if (data) {
-      model.value.avatarUrl = data.path
-      onFinish()
-    }
-
-  }
-  catch (error: any) {
-    console.log(error)
-    message.error(error.message);
-    onError();
-  }
-
-}
 
 function isButtonDisabled() {
   return (
-    !model.value.fristName ||
-    !model.value.country 
+    !model.value.firstName || 
+    !model.value.lastName ||
+    !model.value.email ||
+    !model.value.password
     )
 }
 const renderLabel: (option: SelectOption) => VNodeChild = (option) => {
@@ -153,7 +95,7 @@ const genderOptions = [
 
 const options = computed(() => {
     return ['@gmail.com'].map((suffix) => {
-        const prefix = model.value.fristName!.split('@')[0]
+        const prefix = ''//model.value.fristName!!.split('@')[0]
         return {
             label: prefix + suffix,
             value: prefix + suffix
@@ -168,8 +110,8 @@ function handlePasswordInput() {
 const authStore = useAuthStore()
 async function addUser() {
   try {
-    model.value.userType = props.userType
-    model.value.avatarUrl = ''
+  
+ 
     // await authStore.signUp(
     //   model.value
     // );
@@ -220,9 +162,9 @@ formRef.value?.validate((errors: Array<FormValidationError> | undefined) => {
   <div class="border-none shadow-none flex flex-col gap-2 p-2 rounded-lg">
 
     <div class="post-heading mb-1">
-      <div class="gtext text-2xl font-bold underlined">{{ t('common.addNew') }}</div>
+      <div class="gtext text-2xl font-bold underlined">{{ t('common.myProfile') }}</div>
     </div>
-
+   
     <NForm
       ref="formRef"
       :model="model"
@@ -234,31 +176,14 @@ formRef.value?.validate((errors: Array<FormValidationError> | undefined) => {
         <NGrid
     
         >
-          <NFormItemGi
-            :span="span"
-            path="image"
-            :label="t('common.image')"
-          >
-            <NUpload
-              accept="image/*"
-              list-type="image-card"
-              :max=1
-              path="image"
-              :data="{
-                'folder': folder,
-                'bucket': bucket
-              }"
-              :custom-request="customRequest"
-            >
-            </NUpload>
-          </NFormItemGi>
+        
           <NFormItemGi
             :span="span"
             path="firstName"
             :label="t('common.firstName')"
           >
             <NInput
-              v-model:value="model.fristName"
+              v-model:value="model.firstName"
               :placeholder="t('common.firstName')"
               clearable
               @keydown.enter.prevent
@@ -313,76 +238,9 @@ formRef.value?.validate((errors: Array<FormValidationError> | undefined) => {
                         </template>
                     </NAutoComplete>
                 </NFormItemGi>
-                <NFormItemGi
-                 :span="span"
-                    ref="passwordFormItemRef"
-                    first
-                    path="password"
-                    :label="t('auth.password')"
-                >
-                    <NInput
-                        v-model:value="model.password"
-                        show-password-on="click"
-                        @input="handlePasswordInput"
-                        type="password"
-                        :maxlength="20"
-                        @keyup.enter="handleValidateButtonClick"
-                    >
+               
 
-                        <template #prefix>
-                            <SvgIcon
-                                icon="mdi:password"
-                                class="text-md text-primary"
-                            />
-                        </template>
-                        <template #password-visible-icon>
-                            <SvgIcon
-                                icon="mdi:show"
-                                class="text-md text-primary"
-                            />
-                        </template>
-                        <template #password-invisible-icon>
-                            <SvgIcon
-                                icon="gridicons:not-visible"
-                                class="text-md text-primary"
-                            />
-                        </template>
-
-                    </NInput>
-
-                </NFormItemGi>
-          <NFormItemGi
-            :span="span"
-            path="gender"
-            :label="t('common.gender')"
-          >
-            <NSelect
-              filterable
-              trigger="hover"
-              v-model:value="model.gender"
-              :options="genderOptions"
-             
-            >
-              <NButton>{{ t('common.gender') }}</NButton>
-            </NSelect>
-          </NFormItemGi>
-          <NFormItemGi
-            :span="span"
-            path="country"
-            :label="t('common.country')"
-          >
-            <NSelect
-              filterable
-              trigger="hover"
-              v-model:value="model.country"
-              :options="utilStore.getCountryOption()"
-              :render-label="renderLabel"
-            >
-              <NButton>{{ t('common.country') }}</NButton>
-            </NSelect>
-          </NFormItemGi>
-
-          <NFormItemGi
+          <!-- <NFormItemGi
             :span="span"
             path="state"
             :label="t('common.state')"
@@ -391,11 +249,11 @@ formRef.value?.validate((errors: Array<FormValidationError> | undefined) => {
               v-model:value="model.state as boolean"
               size="large"
             />
-          </NFormItemGi>
+          </NFormItemGi> -->
 
         </NGrid>
       </div>
-
+<div class="flex flex-col gap-2">
       <div style="display: flex; justify-content: flex-end">
         <NButton
           type="primary"
@@ -405,10 +263,13 @@ formRef.value?.validate((errors: Array<FormValidationError> | undefined) => {
           :disabled="isButtonDisabled()"
            @click="handleValidateButtonClick"
         >
-          {{ t('common.addNew') }}
+          {{ t('common.update') }}
         </NButton>
-      </div>
 
+      
+      </div>
+      <signOut/>
+    </div>
     </NForm>
   </div>
 </template>

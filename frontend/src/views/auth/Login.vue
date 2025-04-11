@@ -27,15 +27,15 @@ const authStore = useAuthStore()
 // const chatStore = useChatStore()
 interface ModelType {
     username:string
-    email: string
     password: string
 }
 const formRef = ref<FormInst | null>(null)
 const passwordFormItemRef = ref<FormItemInst | null>(null)
 const message = useMessage()
 const loading = ref(false)
+const errorMessage = ref('')
 const modelRef = ref<ModelType>({
-    email: '',
+  
     username: '',
     password: '',
 })
@@ -73,6 +73,7 @@ function handlePasswordInput() {
 
 async function signIn() {
     try {
+        errorMessage.value = '' // Clear any previous errors
         await authStore.Login(model.value.username!, model.value.password!);
         loading.value = false
         handleStart()
@@ -80,9 +81,11 @@ async function signIn() {
         handleFinish()
 
     } catch (error: any) {
-        console.error(error.message)
+        // console.error("error.message")
+        errorMessage.value = "أسم المستخدم أو كلمة المرور غير متطابقة"
+        // console.error(error.error)
         loading.value = false
-        message.error(t('auth.signInFailed'));
+        // error.value = t('auth.signInFailed')
     }
 }
 const loadingBar = useLoadingBar()
@@ -98,12 +101,6 @@ function handleFinish() {
 async function handleGoToSignUp() {
     handleStart()
     await router.push('/auth/signup');
-    handleFinish()
-
-}
-async function handleGoToForgetPass() {
-    handleStart()
-    await router.push({ name: 'forgetPass', });
     handleFinish()
 
 }
@@ -143,15 +140,7 @@ function handleValidateButtonClick(e: MouseEvent) {
 }
 
 
-const options = computed(() => {
-    return ['@gmail.com'].map((suffix) => {
-        const prefix = model.value.email.split('@')[0]
-        return {
-            label: prefix + suffix,
-            value: prefix + suffix
-        }
-    })
-})
+
 </script>
 
 <template>
@@ -162,9 +151,13 @@ const options = computed(() => {
 
         <div
             class="flex flex-col relative overflow-hidden  place-self-center gap-6 w-96 pt-2 px-4 glass bg-red-100 dark:bg-gray-800 dark:text-white rounded-lg">
-            <!-- <div class="h-20 w-20 absolute -left-5 -bottom-10 rounded-full bg-primary"></div> -->
+       
             <div class="post-heading">
                 <div class="text1 text-3xl  font-bold text-center gtext p-1">{{ t('auth.loginIn') }}</div>
+            </div>
+           
+            <div v-if="errorMessage" class="p-3 text-center text-sm text-red-500 bg-red-50 dark:bg-red-900/50 rounded-lg">
+                {{ errorMessage }}
             </div>
             <NForm
                 ref="formRef"
@@ -173,47 +166,13 @@ const options = computed(() => {
                 size="large"
             >
             <NFormItem path="username" :label="t('auth.username')">
-                <NInput v-model:value="model.username" placeholder="Username" @keyup.enter="nextStep">
+                <NInput v-model:value="model.username" placeholder="Username" >
                   <template #prefix>
                     <SvgIcon icon="ic:baseline-person" class="text-md text-primary" />
                   </template>
                 </NInput>
               </NFormItem>
 
-                <!-- <NFormItem
-                    path="email"
-                    :label="t('auth.email')"
-                >
-                    <NAutoComplete
-                        v-model:value="model.email"
-                        :input-props="{
-                            autocomplete: 'disabled'
-                        }"
-                        :options="options"
-                        size="large"
-                        placeholder="Email"
-                        clearable
-                    >
-                        <template #default="{ handleInput, handleBlur, handleFocus, value: slotValue }">
-                            <NInput
-                                placeholder="example@gmail.com"
-                                @keydown.enter.prevent
-                                :value="slotValue"
-                                @input="handleInput"
-                                @focus="handleFocus"
-                                @blur="handleBlur"
-                                size="large"
-                            >
-                                <template #prefix>
-                                    <SvgIcon
-                                        icon="ic:baseline-email"
-                                        class="text-md text-primary"
-                                    />
-                                </template>
-                            </NInput>
-                        </template>
-                    </NAutoComplete>
-                </NFormItem> -->
                 <NFormItem
                     ref="passwordFormItemRef"
                     first
@@ -225,7 +184,7 @@ const options = computed(() => {
                         show-password-on="click"
                         @input="handlePasswordInput"
                         type="password"
-                        :maxlength="20"
+                        :maxlength="50"
                         @keyup.enter="handleValidateButtonClick"
                     >
 
@@ -258,7 +217,7 @@ const options = computed(() => {
                         style="width:100%;"
                         size="large"
                         :loading="loading"
-                        :disabled="model.email === null || model.password === null"
+                        :disabled="model.username === null || model.password === null"
                         @click="handleValidateButtonClick"
                     >
                         {{ t('auth.login') }}

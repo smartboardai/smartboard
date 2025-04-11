@@ -14,9 +14,9 @@ export function setupPageGuard(router: Router) {
       return next({ name: 'auth' }) // Redirect to login if not authenticated
     }
 
-    if (to.path.startsWith('/admin') && userRole === 'admin') {
-      return next({ name: 'home' }) // Redirect non-admin users to home
-    }
+    // if (to.path.startsWith('/admin') && userRole === 'admin') {
+    //   return next({ name: 'home' }) // Redirect non-admin users to home
+    // }
 
     // Prevent logged-in users from accessing auth pages
     if (isAuthenticated && ['auth', 'signup', 'login', 'otp'].includes(to.name as string)) {
