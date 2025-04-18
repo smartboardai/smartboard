@@ -37,11 +37,7 @@ const routes: RouteRecordRaw[] = [
     name: 'signup',
     component: () => import('@/views/auth/signUp.vue'),
   },
-  {
-    path: '/auth/otp',
-    name: 'otp',
-    component: () => import('@/views/auth/OTP.vue'),
-  },
+
 
 
   {
@@ -111,35 +107,6 @@ const routes: RouteRecordRaw[] = [
         meta: { requiresAuth: true },
       },
 
-      {
-        path: '/admin/translation',
-        name: 'translation',
-        component: () => import('@/views/admin/translation/index.vue'), 
-        meta: { requiresAuth: true },
-      },
-      {
-        path: '/admin/themes',
-        name: 'themes',
-        component: () => import('@/views/admin/themes/index.vue'), 
-        meta: { requiresAuth: true },
-      },
-      // {
-      //   path: '/admin/filesmanager',
-      //   name: 'filesmanager',
-      //   component: () => import('@/views/admin/files_manager/index.vue'), 
-      //   meta: { requiresAuth: true },
-      // },
-      // {
-      //   path: '/admin/chat',
-      //   name: 'main-chat',
-      //   component: () => import('@/views/chat/layout/Layout.vue'),
-      // },
-
-      // {
-      //   path: '/admin/country',
-      //   name: 'country',
-      //   component: () => import('@/views/admin/country/index.vue'),
-      // },
       {
         path: '/admin/submit-question',
         name: 'submit-question',
