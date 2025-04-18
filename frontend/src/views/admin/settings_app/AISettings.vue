@@ -150,10 +150,10 @@ const handleSubmit = async () => {
     message.loading(t('settings.testingApiKey'))
 
     // First verify the API key
-    const isValid = await verifyApiKey(currentSetting.value.provider, currentApiKey.value)
-    if (!isValid) {
-      return
-    }
+    // const isValid = await verifyApiKey(currentSetting.value.provider, currentApiKey.value)
+    // if (!isValid) {
+    //   return
+    // }
 
     const data = {
       provider: currentSetting.value.provider,

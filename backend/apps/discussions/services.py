@@ -28,9 +28,11 @@ class AIService:
         if not settings or not settings.openai_api_key:
             raise ValueError("OpenAI API key not configured")
 
-        openai.api_key = settings.openai_api_key
+        from openai import OpenAI  # Import the new client
         
-        response = openai.ChatCompletion.create(
+        client = OpenAI(api_key=settings.openai_api_key)
+        
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": system_prompt},
