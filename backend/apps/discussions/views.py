@@ -1,122 +1,18 @@
+"""
+تحديث واجهة برمجة تطبيقات AISettingsViewSet للتعامل مع الإعدادات الجديدة
+"""
+
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.permissions import IsAuthenticated
-from .models import Question, QuestionMedia, Answer, AISettings
-from .serializers import QuestionSerializer, QuestionMediaSerializer, AnswerSerializer, AISettingsSerializer
-from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
 from rest_framework.decorators import action, api_view
 import requests
-
-# Create your views here.
-
-class QuestionViewSet(viewsets.ModelViewSet):
-    queryset = Question.objects.all()
-    serializer_class = QuestionSerializer
-    parser_classes = (MultiPartParser, FormParser, JSONParser)
-    # permission_classes = [IsAuthenticated]
-
-    def perform_create(self, serializer):
-        # Get user_id from request data
-        user_id = self.request.data.get('user_id')
-        if not user_id:
-            raise ValidationError({'user_id': 'This field is required.'})
-            
-        # Get user instance
-        User = get_user_model()
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            raise ValidationError({'user_id': 'Invalid user ID.'})
-        
-        try:
-            # Create question first
-            question = serializer.save(user=user)
-            
-            # Handle file uploads
-            files = self.request.FILES.getlist('files')
-            for file in files:
-                QuestionMedia.objects.create(
-                    question=question,
-                    file=file,
-                    file_type=file.content_type
-                )
-            
-            return question
-        except Exception as e:
-            # If something goes wrong, delete the question and its files
-            if 'question' in locals():
-                question.delete()
-            raise ValidationError(str(e))
-
-    def retrieve(self, request, *args, **kwargs):
-        try:
-            instance = self.get_object()
-            serializer = self.get_serializer(instance)
-            return Response(serializer.data)
-        except Question.DoesNotExist:
-            return Response(
-                {"detail": "Question not found"}, 
-                status=status.HTTP_404_NOT_FOUND
-            )
-        except Exception as e:
-            return Response(
-                {"detail": str(e)}, 
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-    @action(detail=True, methods=['post'])
-    def answers(self, request, pk=None):
-        try:
-            question = self.get_object()
-            user_id = request.data.get('user_id')
-            content = request.data.get('content')
-
-            if not user_id or not content:
-                return Response(
-                    {'error': 'Both user_id and content are required'}, 
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            # Get user instance
-            User = get_user_model()
-            try:
-                user = User.objects.get(id=user_id)
-            except User.DoesNotExist:
-                return Response(
-                    {'error': 'Invalid user ID'}, 
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            # Create answer instance
-            answer = Answer(
-                question=question,
-                user=user,
-                content=content,
-                moderation_status='pending'
-            )
-
-            # Check for duplicates before saving
-            if answer.check_duplicate(question.id):
-                return Response({
-                    'error': 'Similar answer already exists',
-                    'status': 'duplicate',
-                    'similarity_score': answer.similarity_score
-                }, status=status.HTTP_400_BAD_REQUEST)
-
-            # Save the answer
-            answer.save()
-
-            serializer = AnswerSerializer(answer)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        except Exception as e:
-            return Response(
-                {'error': str(e)}, 
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+import os
+from .models import AISettings
+from .serializers import AISettingsSerializer
 
 class AISettingsViewSet(viewsets.ModelViewSet):
     queryset = AISettings.objects.all()
@@ -127,24 +23,57 @@ class AISettingsViewSet(viewsets.ModelViewSet):
         try:
             # Validate the API key before saving
             provider = self.request.data.get('provider')
-            api_key = (
-                self.request.data.get('openai_api_key')
-                if provider == 'openai'
-                else self.request.data.get('huggingface_api_key')
-            )
             
-            if not api_key:
-                raise ValidationError(f'{provider} API key is required')
-
-            # Test the API key
-            if provider == 'huggingface':
+            # التحقق من صحة الإعدادات حسب المزود
+            if provider == 'openai':
+                api_key = self.request.data.get('openai_api_key')
+                if not api_key:
+                    raise ValidationError('OpenAI API key is required')
+                # يمكن إضافة اختبار للمفتاح هنا إذا لزم الأمر
+                
+            elif provider == 'huggingface':
+                api_key = self.request.data.get('huggingface_api_key')
+                if not api_key:
+                    raise ValidationError('Hugging Face API key is required')
                 try:
                     from huggingface_hub import HfApi
                     api = HfApi(token=api_key)
                     api.whoami()
                 except Exception as e:
                     raise ValidationError(f'Invalid Hugging Face API key: {str(e)}')
-
+                
+            elif provider == 'free_api':
+                endpoint = self.request.data.get('free_api_endpoint')
+                if not endpoint:
+                    raise ValidationError('Free API endpoint is required')
+                # اختبار الاتصال بالنقطة النهائية
+                try:
+                    # إجراء طلب اختبار بسيط
+                    headers = {}
+                    free_api_key = self.request.data.get('free_api_key')
+                    if free_api_key:
+                        headers["Authorization"] = f"Bearer {free_api_key}"
+                    
+                    response = requests.post(
+                        endpoint,
+                        headers=headers,
+                        json={"content": "Hello", "max_tokens": 5},
+                        timeout=10
+                    )
+                    
+                    if response.status_code >= 400:
+                        raise ValidationError(f'API endpoint test failed with status code: {response.status_code}')
+                except requests.exceptions.RequestException as e:
+                    raise ValidationError(f'Could not connect to API endpoint: {str(e)}')
+                
+            elif provider == 'local_model':
+                model_path = self.request.data.get('local_model_path')
+                if not model_path:
+                    raise ValidationError('Local model path is required')
+                # التحقق من وجود النموذج
+                if not os.path.exists(model_path):
+                    raise ValidationError('Model path does not exist')
+            
             # Deactivate other settings
             AISettings.objects.all().update(is_active=False)
             
@@ -160,8 +89,25 @@ class AISettingsViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         try:
+            # إذا كان الإعداد الجديد نشطًا، قم بإلغاء تنشيط الإعدادات الأخرى
             if serializer.validated_data.get('is_active', False):
                 AISettings.objects.exclude(pk=serializer.instance.pk).update(is_active=False)
+            
+            # التحقق من صحة الإعدادات حسب المزود
+            provider = serializer.validated_data.get('provider', serializer.instance.provider)
+            
+            if provider == 'free_api':
+                endpoint = serializer.validated_data.get('free_api_endpoint', serializer.instance.free_api_endpoint)
+                if not endpoint:
+                    raise ValidationError('Free API endpoint is required')
+            
+            elif provider == 'local_model':
+                model_path = serializer.validated_data.get('local_model_path', serializer.instance.local_model_path)
+                if not model_path:
+                    raise ValidationError('Local model path is required')
+                if not os.path.exists(model_path):
+                    raise ValidationError('Model path does not exist')
+            
             serializer.save()
         except Exception as e:
             raise ValidationError(str(e))
@@ -172,8 +118,14 @@ class AISettingsViewSet(viewsets.ModelViewSet):
             instance = self.get_object()
             if instance.provider == 'openai':
                 return Response({'api_key': instance.openai_api_key})
-            else:
+            elif instance.provider == 'huggingface':
                 return Response({'api_key': instance.huggingface_api_key})
+            elif instance.provider == 'free_api':
+                return Response({'api_key': instance.free_api_key, 'endpoint': instance.free_api_endpoint})
+            elif instance.provider == 'local_model':
+                return Response({'model_path': instance.local_model_path})
+            else:
+                return Response({'error': 'Unknown provider'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response(
                 {'error': str(e)}, 
@@ -183,17 +135,23 @@ class AISettingsViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 def verify_ai_settings(request):
     provider = request.data.get('provider')
-    api_key = request.data.get('api_key')
     
-    if not provider or not api_key:
+    if not provider:
         return Response({
             'valid': False,
-            'error': 'Provider and API key are required'
+            'error': 'Provider is required'
         })
     
     try:
         if provider == 'huggingface':
             # Test with a simple API call
+            api_key = request.data.get('api_key')
+            if not api_key:
+                return Response({
+                    'valid': False,
+                    'error': 'API key is required'
+                })
+                
             API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-base"
             headers = {"Authorization": f"Bearer {api_key}"}
             
@@ -225,6 +183,79 @@ def verify_ai_settings(request):
                     'valid': False,
                     'error': f'API error: {response.status_code}'
                 })
+        
+        elif provider == 'free_api':
+            endpoint = request.data.get('endpoint')
+            api_key = request.data.get('api_key', '')  # اختياري
+            
+            if not endpoint:
+                return Response({
+                    'valid': False,
+                    'error': 'API endpoint is required'
+                })
+            
+            try:
+                # اختبار الاتصال بالنقطة النهائية
+                headers = {}
+                if api_key:
+                    headers["Authorization"] = f"Bearer {api_key}"
+                
+                response = requests.post(
+                    endpoint,
+                    headers=headers,
+                    json={"content": "Hello", "max_tokens": 5},
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    return Response({'valid': True})
+                else:
+                    return Response({
+                        'valid': False,
+                        'error': f'API error: {response.status_code}'
+                    })
+            except Exception as e:
+                return Response({
+                    'valid': False,
+                    'error': str(e)
+                })
+        
+        elif provider == 'local_model':
+            model_path = request.data.get('model_path')
+            if not model_path:
+                return Response({
+                    'valid': False,
+                    'error': 'Model path is required'
+                })
+            
+            try:
+                # التحقق من وجود النموذج
+                if not os.path.exists(model_path):
+                    return Response({
+                        'valid': False,
+                        'error': 'Model path does not exist'
+                    })
+                
+                # يمكن إضافة اختبار لتحميل النموذج هنا إذا لزم الأمر
+                
+                return Response({'valid': True})
+            except Exception as e:
+                return Response({
+                    'valid': False,
+                    'error': str(e)
+                })
+        
+        elif provider == 'openai':
+            api_key = request.data.get('api_key')
+            if not api_key:
+                return Response({
+                    'valid': False,
+                    'error': 'API key is required'
+                })
+            
+            # يمكن إضافة اختبار للمفتاح هنا
+            
+            return Response({'valid': True})
                 
         return Response({'valid': False, 'error': 'Unsupported provider'})
         

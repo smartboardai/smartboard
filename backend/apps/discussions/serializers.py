@@ -31,10 +31,16 @@ class QuestionSerializer(serializers.ModelSerializer):
 class AISettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = AISettings
-        fields = ['id', 'provider', 'is_active', 'openai_api_key', 'huggingface_api_key', 'created_at', 'updated_at']
+        fields = [
+            'id', 'provider', 'is_active', 
+            'openai_api_key', 'huggingface_api_key', 
+            'free_api_endpoint', 'free_api_key', 'local_model_path',
+            'created_at', 'updated_at'
+        ]
         extra_kwargs = {
             'openai_api_key': {'write_only': False},  # Allow reading API keys
-            'huggingface_api_key': {'write_only': False}
+            'huggingface_api_key': {'write_only': False},
+            'free_api_key': {'write_only': False}
         }
 
     def to_representation(self, instance):
@@ -44,16 +50,24 @@ class AISettingsSerializer(serializers.ModelSerializer):
             data['openai_api_key'] = '********'
         if 'huggingface_api_key' in data and data['huggingface_api_key']:
             data['huggingface_api_key'] = '********'
+        if 'free_api_key' in data and data['free_api_key']:
+            data['free_api_key'] = '********'
         return data
 
     def validate(self, data):
         provider = data.get('provider')
         openai_key = data.get('openai_api_key')
         huggingface_key = data.get('huggingface_api_key')
+        free_api_endpoint = data.get('free_api_endpoint')
+        local_model_path = data.get('local_model_path')
 
         if provider == 'openai' and not openai_key:
             raise serializers.ValidationError({'openai_api_key': 'OpenAI API key is required'})
         elif provider == 'huggingface' and not huggingface_key:
             raise serializers.ValidationError({'huggingface_api_key': 'Hugging Face API key is required'})
+        elif provider == 'free_api' and not free_api_endpoint:
+            raise serializers.ValidationError({'free_api_endpoint': 'Free API endpoint is required'})
+        elif provider == 'local_model' and not local_model_path:
+            raise serializers.ValidationError({'local_model_path': 'Local model path is required'})
 
         return data
