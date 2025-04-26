@@ -123,7 +123,7 @@ export default {
     Admins: 'المسؤولون',
     AICompanies: 'شركات الذكاء الاصطناعي',
     AIModels: 'نماذج الذكاء الاصطناعي',
-    Questions: 'الأسئلة',
+    Questions: 'المناقشات',
     Dashboard: 'اللوحة الرئيسية',
     AI: 'ذكاء اصطناعي',
     deleteMessage: 'حذف الرسالة',

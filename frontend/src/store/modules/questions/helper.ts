@@ -1,5 +1,5 @@
 
-export const initState = (): API.Question => ({
+export const initState = (): API.Discussion => ({
   id: '',
   title: '',
   content: '',
@@ -10,7 +10,7 @@ export const initState = (): API.Question => ({
   files: []
 })
 
-export interface QuestionState {
-  questions: API.Question[]
-  currentQuestion: API.Question | null
+export interface DiscussionState {
+  discussions: API.Discussion[]
+  currentDiscussion: API.Discussion | null
 } 

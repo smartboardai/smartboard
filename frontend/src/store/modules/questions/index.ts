@@ -4,7 +4,7 @@ import { initState } from './helper'
 
 import { get, post, del } from '@/utils/request'
 
-const baseStore = createBaseStore<API.Question>('questions', initState)
+const baseStore = createBaseStore<API.Discussion>('discussions', initState)
 
 interface PaginatedResponse<T> {
   count: number
@@ -13,7 +13,7 @@ interface PaginatedResponse<T> {
   results: T[]
 }
 
-export const useQuestionsStore = defineStore('questions-store', {
+export const useDiscussionsStore = defineStore('discussions-store', {
     state: () => ({
         listData: [] as any[],
         loadingInit: true,
@@ -25,7 +25,7 @@ export const useQuestionsStore = defineStore('questions-store', {
     
       actions: {
  
-    async fetchQuestions() {
+    async fetchDiscussions() {
       try {
         const data = await get<PaginatedResponse<any>>({
           url: 'discussions/questions/'
@@ -39,7 +39,7 @@ export const useQuestionsStore = defineStore('questions-store', {
       }
     },
 
-    async getQuestionById(id: string) {
+    async getDiscussionById(id: string) {
       try {
         const  data = await get({
           url: `discussions/questions/${id}/`
@@ -67,7 +67,7 @@ export const useQuestionsStore = defineStore('questions-store', {
       }
     },
 
-    async deleteQuestion(id: string) {
+    async deleteDiscussion(id: string) {
       try {
         const { error } = await del({
           url: `discussions/questions/${id}/`

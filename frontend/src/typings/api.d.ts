@@ -10,7 +10,7 @@ declare namespace API {
     username: string| null,
     role: Roles| null
   }
-  interface Question {
+  interface Discussion {
     id: string
     title: string
     content: string
@@ -21,9 +21,9 @@ declare namespace API {
     files: File[]
   }
   
-   interface QuestionMedia {
+   interface DiscussionMedia {
     id: string
-    questionId: string
+    discussionId: string
     file: string
     fileType: string
     createdAt: string
@@ -32,7 +32,7 @@ declare namespace API {
    interface Answer {
     id: string
     content: string
-    questionId: string
+    discussionId: string
     userId: string
     createdAt: string
     updatedAt: string
@@ -117,7 +117,7 @@ interface UserAuth {
     adminCount: number
     aiCompanyCount: number
     aiModelCount: number
-    questionCount: number
+    discussionCount: number
     convAICount: number
     convExpertCount: number
     monthlyData: MonthlyData[]
@@ -152,7 +152,7 @@ interface UserAuth {
     adminCount: number;
     aiCompanyCount: number;
     aiModelCount: number;
-    questionCount: number;
+    discussionCount: number;
   }
 
 

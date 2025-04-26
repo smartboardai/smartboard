@@ -3,7 +3,7 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMessage } from 'naive-ui'
 import { t } from '@/locales'
-import { useQuestionsStore } from '@/store/modules/questions'
+import { useDiscussionsStore } from '@/store/modules/questions'
 import { SvgIcon } from '@/components/common'
 import { post } from '@/utils/request'
 import { useUserStore } from '@/store'
@@ -31,8 +31,8 @@ interface Answer {
   similarity_score: number
 }
 
-// Update Question interface to include typed answers array
-interface Question {
+// Update Discussion interface to include typed answers array
+interface Discussion {
   id: string | number
   title: string
   content: string
@@ -46,9 +46,9 @@ const router = useRouter()
 const message = useMessage()
 const loading = ref(false)
 const submitting = ref(false)
-const question = ref<Question | null>(null)
+const discussion = ref<Discussion | null>(null)
 const newAnswer = ref('')
-const questionsStore = useQuestionsStore()
+const discussionsStore = useDiscussionsStore()
 const userStore = useUserStore()
 
 // Check if user is admin
@@ -148,7 +148,7 @@ const getModerationTagType = (status: string) => {
 
 const questionId = route.params.id as string
 
-const loadQuestion = async () => {
+const loadDiscussion = async () => {
   if (!route.params.id) return
 
   try {
@@ -156,7 +156,7 @@ const loadQuestion = async () => {
     const response = await axios.get(`${baseURL}discussions/questions/${route.params.id}/`)
     
     if (response.data) {
-      question.value = response.data
+      discussion.value = response.data
     }
   } catch (error: any) {
     message.error(error.message || t('common.loadError'))
