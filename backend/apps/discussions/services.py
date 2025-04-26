@@ -50,7 +50,7 @@ class AIService:
             raise ValueError("Hugging Face API key not configured")
 
         # Use Llama 2 model
-        API_URL = "https://api-inference.huggingface.co/models/meta-llama/Llama-2-70b-chat-hf"
+        API_URL = "meta-llama/Meta-Llama-3.1-8B-Instruct"
         headers = {
             "Authorization": f"Bearer {settings.huggingface_api_key}",
             "Content-Type": "application/json"
