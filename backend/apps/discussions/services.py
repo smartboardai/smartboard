@@ -1,247 +1,216 @@
-"""
-تعديل فئة AIService لدعم معالجة المحتوى باستخدام الخدمات المجانية
-"""
-
+import openai
+from transformers import pipeline
+import requests
 import logging
 import time
-import requests
-import json
-from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
 class AIService:
     def __init__(self):
+        from django.conf import settings
         self.settings = self.get_active_ai_settings()
         logger.info(f"AI Provider: {self.settings.provider if self.settings else 'None'}")
+        logger.info(f"Has HF Key: {bool(self.settings.huggingface_api_key) if self.settings else False}")
 
     def get_active_ai_settings(self):
         from .models import AISettings
         return AISettings.objects.filter(is_active=True).first()
 
-    @classmethod
-    def get_ai_settings(cls):
+    @staticmethod
+    def get_ai_settings():
         from .models import AISettings
         return AISettings.get_active_settings()
 
-    @classmethod
-    def process_with_openai(cls, content, system_prompt):
-        settings = cls.get_ai_settings()
+    @staticmethod
+    def process_with_openai(content, system_prompt):
+        settings = AIService.get_ai_settings()
         if not settings or not settings.openai_api_key:
             raise ValueError("OpenAI API key not configured")
 
+        from openai import OpenAI  # Import the new client
+        
         client = OpenAI(api_key=settings.openai_api_key)
         
-        try:
-            response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": content}
-                ],
-                temperature=0.7,
-                max_tokens=1000
-            )
-            
-            return response.choices[0].message.content
-        except Exception as e:
-            logger.error(f"Error processing with OpenAI: {str(e)}")
-            raise ValueError(f"Error processing with OpenAI: {str(e)}")
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": content}
+            ],
+            temperature=0.7
+        )
+        
+        return response.choices[0].message.content
 
-    @classmethod
-    def process_with_huggingface(cls, content, system_prompt):
-        settings = cls.get_ai_settings()
+    @staticmethod
+    def process_with_huggingface(content, system_prompt=None):
+        settings = AIService.get_ai_settings()
         if not settings or not settings.huggingface_api_key:
             raise ValueError("Hugging Face API key not configured")
-            
-        API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-xxl"
-        headers = {"Authorization": f"Bearer {settings.huggingface_api_key}"}
-        
-        # Combine system prompt and content
-        full_prompt = f"{system_prompt}\n\n{content}"
-        
+
+        # Use Llama 2 model
+        API_URL = "https://api-inference.huggingface.co/models/meta-llama/Llama-2-70b-chat-hf"
+        headers = {
+            "Authorization": f"Bearer {settings.huggingface_api_key}",
+            "Content-Type": "application/json"
+        }
+
         max_retries = 3
-        retry_delay = 5
-        
+        retry_delay = 2  # seconds
+
+        # Format the input in Llama 2 chat format
+        if system_prompt:
+            formatted_input = f"""<s>[INST] <<SYS>>
+{system_prompt}
+<</SYS>>
+
+{content} [/INST]"""
+        else:
+            formatted_input = f"<s>[INST] {content} [/INST]"
+
         for attempt in range(max_retries):
             try:
+                # Configure payload for Llama 2
+                payload = {
+                    "inputs": formatted_input,
+                    "parameters": {
+                        "max_new_tokens": 512,
+                        "temperature": 0.7,
+                        "top_p": 0.95,
+                        "do_sample": True,
+                        "return_full_text": False
+                    }
+                }
+
+                logger.info(f"Sending request to Hugging Face API: {payload}")
+                
                 response = requests.post(
                     API_URL,
                     headers=headers,
-                    json={
-                        "inputs": full_prompt,
-                        "options": {"wait_for_model": True}
-                    },
-                    timeout=30
+                    json=payload,
+                    timeout=45  # Increased timeout for larger model
                 )
+
+                # Log the response for debugging
+                logger.info(f"Hugging Face API Response Status: {response.status_code}")
+                logger.info(f"Hugging Face API Response: {response.text}")
                 
                 if response.status_code == 503:
-                    # Model is loading
                     if attempt < max_retries - 1:
                         logger.warning("Model is loading, waiting before retry...")
                         time.sleep(retry_delay * 2)  # Longer wait for large model
                         continue
-                    else:
-                        raise ValueError("Hugging Face service is temporarily unavailable")
-                
+                    raise ValueError("Hugging Face service is temporarily unavailable")
+
                 response.raise_for_status()
                 result = response.json()
                 
+                # Handle Llama 2 response format
                 if isinstance(result, list) and len(result) > 0:
-                    if 'generated_text' in result[0]:
-                        return result[0]['generated_text']
-                    else:
-                        raise ValueError(f"No text found in response: {result}")
-                else:
-                    raise ValueError(f"Unexpected response format from Hugging Face API: {result}")
+                    if isinstance(result[0], dict):
+                        # Extract generated text
+                        text = result[0].get('generated_text', '')
+                        if not text:
+                            raise ValueError(f"No text found in response: {result}")
+                        
+                        # Clean up Llama 2 specific formatting
+                        generated_text = text.strip()
+                        generated_text = generated_text.replace('<s>', '').replace('</s>', '')
+                        generated_text = generated_text.replace('[INST]', '').replace('[/INST]', '')
+                        generated_text = generated_text.replace('<<SYS>>', '').replace('<</SYS>>', '')
+                        
+                        # Remove the system prompt and input from the response
+                        if system_prompt:
+                            generated_text = generated_text.replace(system_prompt, '').strip()
+                            generated_text = generated_text.replace(content, '').strip()
+                        
+                        return generated_text
+                    elif isinstance(result[0], str):
+                        return result[0].strip()
                     
+                raise ValueError(f"Unexpected response format from Hugging Face API: {result}")
+                
             except requests.exceptions.Timeout:
                 if attempt < max_retries - 1:
                     logger.warning("Request timed out, retrying...")
-                    time.sleep(retry_delay)
-                else:
-                    raise ValueError("Request to Hugging Face API timed out")
+                    time.sleep(retry_delay * 2)
+                    continue
+                raise ValueError("Request to Hugging Face API timed out")
+                
             except requests.exceptions.RequestException as e:
+                logger.error(f"Hugging Face API error: {str(e)}")
                 if attempt < max_retries - 1:
                     logger.warning("Request failed, retrying...")
                     time.sleep(retry_delay)
-                else:
-                    raise ValueError(f"Error communicating with Hugging Face API: {str(e)}")
+                    continue
+                raise ValueError(f"Error communicating with Hugging Face API: {str(e)}")
+                
             except Exception as e:
+                logger.error(f"Unexpected error: {str(e)}")
+                if attempt < max_retries - 1:
+                    logger.warning("Unexpected error, retrying...")
+                    time.sleep(retry_delay)
+                    continue
                 raise ValueError(f"Unexpected error processing with Hugging Face: {str(e)}")
 
     @classmethod
-    def process_with_free_api(cls, content, system_prompt):
+    def process_content(cls, content, task_type="improve"):
         settings = cls.get_ai_settings()
-        if not settings or not settings.free_api_endpoint:
-            raise ValueError("Free API endpoint not configured")
-        
-        try:
-            headers = {}
-            if settings.free_api_key:
-                headers["Authorization"] = f"Bearer {settings.free_api_key}"
-            
-            # إرسال طلب إلى واجهة API المجانية
-            response = requests.post(
-                settings.free_api_endpoint,
-                headers=headers,
-                json={
-                    "prompt": system_prompt,
-                    "content": content,
-                    "max_tokens": 1000,
-                    "temperature": 0.7
-                },
-                timeout=30
-            )
-            
-            response.raise_for_status()
-            result = response.json()
-            
-            # استخراج النص من الاستجابة - تعديل هذا حسب تنسيق API المجاني المستخدم
-            if 'text' in result:
-                return result['text']
-            elif 'response' in result:
-                return result['response']
-            elif 'generated_text' in result:
-                return result['generated_text']
-            elif 'choices' in result and len(result['choices']) > 0:
-                if isinstance(result['choices'][0], dict) and 'text' in result['choices'][0]:
-                    return result['choices'][0]['text']
-                elif isinstance(result['choices'][0], str):
-                    return result['choices'][0]
-            else:
-                raise ValueError(f"Unexpected response format from Free API: {result}")
-        except Exception as e:
-            logger.error(f"Error processing with Free API: {str(e)}")
-            raise ValueError(f"Error processing with Free API: {str(e)}")
+        if not settings:
+            return content
 
-    @classmethod
-    def process_with_local_model(cls, content, system_prompt):
-        settings = cls.get_ai_settings()
-        if not settings or not settings.local_model_path:
-            raise ValueError("Local model path not configured")
-        
         try:
-            # استخدام مكتبة transformers للتعامل مع النموذج المحلي
-            from transformers import pipeline
-            
-            # تحميل النموذج المحلي
-            generator = pipeline('text-generation', model=settings.local_model_path)
-            
-            # دمج system prompt والمحتوى
-            full_prompt = f"{system_prompt}\n\n{content}"
-            
-            # توليد النص
-            result = generator(full_prompt, max_length=500, do_sample=True, temperature=0.7)
-            
-            # استخراج النص المولد
-            generated_text = result[0]['generated_text']
-            
-            # إزالة النص الأصلي من النص المولد للحصول على الاستجابة فقط
-            if generated_text.startswith(full_prompt):
-                return generated_text[len(full_prompt):].strip()
-            
-            return generated_text
-        except Exception as e:
-            logger.error(f"Error processing with local model: {str(e)}")
-            raise ValueError(f"Error processing with local model: {str(e)}")
-
-    @classmethod
-    def improve_content(cls, content):
-        try:
-            settings = cls.get_ai_settings()
-            if not settings:
-                raise ValueError("AI settings not configured")
-                
+            # Llama 2 optimized system prompt
             system_prompt = """You are a helpful AI assistant that improves text quality.
-            Please enhance the following text by:
-            1. Correcting grammar and spelling errors
-            2. Improving clarity and readability
-            3. Maintaining the original meaning and intent
-            4. Ensuring professional tone
-            5. Adding relevant details when necessary
-            """
-            
+Your task is to enhance the given text by:
+1. Fixing any grammar or spelling errors
+2. Improving clarity and readability
+3. Maintaining the original meaning and intent
+4. Keeping a professional tone
+5. Adding relevant details when necessary
+
+Provide only the improved text without any additional commentary."""
+
             if settings.provider == 'openai':
                 return cls.process_with_openai(content, system_prompt)
+            
             elif settings.provider == 'huggingface':
                 return cls.process_with_huggingface(content, system_prompt)
-            elif settings.provider == 'free_api':
-                return cls.process_with_free_api(content, system_prompt)
-            elif settings.provider == 'local_model':
-                return cls.process_with_local_model(content, system_prompt)
+            
             else:
-                raise ValueError(f"Unsupported provider: {settings.provider}")
+                return content
+
         except Exception as e:
             logger.error(f"AI processing error: {str(e)}")
-            return content  # Return original content on error
+            return content
 
     @classmethod
     def analyze_content(cls, content):
+        settings = cls.get_ai_settings()
+        if not settings:
+            return None
+
         try:
-            settings = cls.get_ai_settings()
-            if not settings:
-                raise ValueError("AI settings not configured")
-                
-            system_prompt = """You are a helpful AI assistant that analyzes text content.
-            Please analyze the following text and provide insights on:
-            1. Main topics and themes
-            2. Tone and sentiment
-            3. Key points and arguments
-            4. Potential areas for improvement
-            5. Overall quality assessment
-            """
-            
+            # Llama 2 optimized analysis prompt
+            system_prompt = """You are an expert content analyzer.
+Provide a concise assessment of the following text, covering:
+1. Content accuracy and factual correctness
+2. Clarity and organization of ideas
+3. Completeness of the response
+4. Specific suggestions for improvement
+
+Keep your analysis brief and actionable."""
+
             if settings.provider == 'openai':
                 return cls.process_with_openai(content, system_prompt)
+            
             elif settings.provider == 'huggingface':
                 return cls.process_with_huggingface(content, system_prompt)
-            elif settings.provider == 'free_api':
-                return cls.process_with_free_api(content, system_prompt)
-            elif settings.provider == 'local_model':
-                return cls.process_with_local_model(content, system_prompt)
+            
             else:
-                raise ValueError(f"Unsupported provider: {settings.provider}")
+                return None
+
         except Exception as e:
             logger.error(f"AI analysis error: {str(e)}")
-            return "Content analysis failed. Please try again later."
+            return None 
