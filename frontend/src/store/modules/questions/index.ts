@@ -7,77 +7,77 @@ import { get, post, del } from '@/utils/request'
 const baseStore = createBaseStore<API.Discussion>('discussions', initState)
 
 interface PaginatedResponse<T> {
-  count: number
-  next: string | null
-  previous: string | null
-  results: T[]
+	count: number
+	next: string | null
+	previous: string | null
+	results: T[]
 }
 
 export const useDiscussionsStore = defineStore('discussions-store', {
-    state: () => ({
-        listData: [] as any[],
-        loadingInit: true,
-        showAdd: false,
-        showUpdate: false,
-        countTotalData: 0,
-        bucket: 'questions'
-      }),
-    
-      actions: {
- 
-    async fetchDiscussions() {
-      try {
-        const data = await get<PaginatedResponse<any>>({
-          url: 'discussions/questions/'
-        })
-        // if (error) throw error
-        this.listData = data.results
-        this.countTotalData = data.count
-        return data.results
-      } catch (error) {
-        throw error
-      }
-    },
+		state: () => ({
+				listData: [] as any[],
+				loadingInit: true,
+				showAdd: false,
+				showUpdate: false,
+				countTotalData: 0,
+				bucket: 'questions'
+			}),
 
-    async getDiscussionById(id: string) {
-      try {
-        const  data = await get({
-          url: `discussions/questions/${id}/`
-        })
+			actions: {
 
-       
-        console.log("data11", data)
-        return data
-      } catch (error: any) {
-        throw error
-      }
-    },
+		async fetchDiscussions() {
+			try {
+				const data = await get<PaginatedResponse<any>>({
+					url: 'discussions/questions/'
+				})
+				// if (error) throw error
+				this.listData = data.results
+				this.countTotalData = data.count
+				return data.results
+			} catch (error) {
+				throw error
+			}
+		},
 
-    async submitAnswer(questionId: string, content: string) {
-      try {
-        const { data, error } = await post({
-          url: `discussions/questions/${questionId}/answers/`,
-          data: { content }
-        })
+		async getDiscussionById(id: string) {
+			try {
+				const  data = await get({
+					url: `discussions/questions/${id}/`
+				})
 
-        if (error) throw error
-        return data
-      } catch (error: any) {
-        throw error
-      }
-    },
 
-    async deleteDiscussion(id: string) {
-      try {
-        const { error } = await del({
-          url: `discussions/questions/${id}/`
-        })
+				console.log("data11", data)
+				return data
+			} catch (error: any) {
+				throw error
+			}
+		},
 
-        if (error) throw error
-        this.listData = this.listData.filter(q => q.id !== id)
-      } catch (error: any) {
-        throw error
-      }
-    }
-  }
-}) 
+		async submitAnswer(questionId: string, content: string) {
+			try {
+				const { data, error } = await post({
+					url: `discussions/questions/${questionId}/answers/`,
+					data: { content }
+				})
+
+				if (error) throw error
+				return data
+			} catch (error: any) {
+				throw error
+			}
+		},
+
+		async deleteDiscussion(id: string) {
+			try {
+				const { error } = await del({
+					url: `discussions/questions/${id}/`
+				})
+
+				if (error) throw error
+				this.listData = this.listData.filter(q => q.id !== id)
+			} catch (error: any) {
+				throw error
+			}
+		}
+	}
+})

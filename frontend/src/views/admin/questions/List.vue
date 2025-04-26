@@ -3,18 +3,18 @@ import { ref, onMounted } from 'vue'
 import { useMessage, useDialog } from 'naive-ui'
 import { t } from '@/locales'
 import { useRouter } from 'vue-router'
-import { useQuestionsStore } from '@/store/modules/questions'
+import { useDiscussionsStore } from '@/store/modules/questions'
 
 const message = useMessage()
 const dialog = useDialog()
 const router = useRouter()
 const loading = ref(false)
-const questionsStore = useQuestionsStore()
+const questionsStore = useDiscussionsStore()
 
 async function fetchQuestions() {
   try {
     loading.value = true
-    await questionsStore.fetchQuestions()
+    await questionsStore.fetchDiscussions()
   } catch (error) {
     message.error(t('common.errorSomeThing'))
   } finally {
@@ -34,7 +34,7 @@ async function handleDelete(questionId: string) {
     negativeText: t('common.no'),
     onPositiveClick: async () => {
       try {
-        await questionsStore.deleteQuestion(questionId)
+        await questionsStore.deleteDiscussion(questionId)
         message.success(t('common.deleteSuccess'))
       } catch (error) {
         message.error(t('common.deleteFailed'))
@@ -92,4 +92,4 @@ const userInfo = computed(() => userStore.$state.user!!)
       </NCard>
     </div>
   </div>
-</template> 
+</template>
