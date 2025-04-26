@@ -38,8 +38,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/auth/signUp.vue'),
   },
 
-
-
   {
     path: '/admin',
     name: 'admin',
@@ -47,12 +45,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
     redirect: '/admin/dashboard',
     children: [
-        
+
       {
         path: '/admin/dashboard',
         name: 'dashboard',
         component: () => import('@/views/admin/dashboard/index.vue'),
-     
+
         meta: { requiresAuth: true },
       },
       {
@@ -60,7 +58,7 @@ const routes: RouteRecordRaw[] = [
         name: 'users',
         component: () => import('@/views/admin/users/List.vue'),
         meta: { requiresAuth: true },
-      
+
       },
       {
         path: '/admin/profile',
@@ -97,31 +95,31 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/admin/edit-terms-of-use',
         name: 'edit-terms-of-use',
-        component: () => import('@/views/admin/settings_app/EditTermsOfUse.vue'), 
+        component: () => import('@/views/admin/settings_app/EditTermsOfUse.vue'),
         meta: { requiresAuth: true },
       },
       {
         path: '/admin/edit-privacy-policy',
         name: 'edit-privacy-policy',
-        component: () => import('@/views/admin/settings_app/EditPrivacyPolicy.vue'), 
+        component: () => import('@/views/admin/settings_app/EditPrivacyPolicy.vue'),
         meta: { requiresAuth: true },
       },
 
       {
-        path: '/admin/submit-question',
-        name: 'submit-question',
+        path: '/admin/submit-discussion',
+        name: 'submit-discussion',
         component: () => import('@/views/admin/questions/Submit.vue'),
         meta: { requiresAuth: true },
       },
       {
-        path: '/admin/list-questions', 
-        name: 'list-questions',
+        path: '/admin/list-discussions',
+        name: 'list-discussions',
         component: () => import('@/views/admin/questions/List.vue'),
         meta: { requiresAuth: true },
       },
       {
-        path: '/admin/questions/:id',
-        name: 'question-details',
+        path: '/admin/discussions/:id',
+        name: 'discussion-details',
         component: () => import('@/views/admin/questions/Details.vue'),
         meta: { requiresAuth: true },
       },
@@ -131,8 +129,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/admin/settings_app/AISettings.vue'),
         meta: { requiresAuth: true },
       },
-   
-   
+
     ],
 
   },
@@ -149,7 +146,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/exception/500/index.vue'),
     meta: { requiresAuth: false },
   },
-
 
   {
     path: '/:pathMatch(.*)*',

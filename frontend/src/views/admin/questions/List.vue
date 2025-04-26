@@ -23,7 +23,7 @@ async function fetchQuestions() {
 }
 
 function handleViewDetails(questionId: string) {
-  router.push(`/admin/questions/${questionId}`)
+  router.push(`/admin/discussions/${questionId}`)
 }
 
 async function handleDelete(questionId: string) {
@@ -54,7 +54,7 @@ const userInfo = computed(() => userStore.$state.user!!)
   <div class="p-4">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-2xl font-bold">{{ t('common.Questions') }}</h2>
-      <NButton type="primary" @click="router.push('/admin/submit-question')">
+      <NButton type="primary" @click="router.push('/admin/submit-discussion')">
         {{ t('common.submitNewQuestion') }}
       </NButton>
     </div>
@@ -92,4 +92,4 @@ const userInfo = computed(() => userStore.$state.user!!)
       </NCard>
     </div>
   </div>
-</template>
+</template> 
