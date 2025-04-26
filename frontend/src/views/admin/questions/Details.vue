@@ -3,7 +3,7 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMessage } from 'naive-ui'
 import { t } from '@/locales'
-import { useDiscussionsStore } from '@/store/modules/questions'
+import { useQuestionsStore } from '@/store/modules/questions'
 import { SvgIcon } from '@/components/common'
 import { post } from '@/utils/request'
 import { useUserStore } from '@/store'
@@ -48,7 +48,7 @@ const loading = ref(false)
 const submitting = ref(false)
 const discussion = ref<Discussion | null>(null)
 const newAnswer = ref('')
-const discussionsStore = useDiscussionsStore()
+const questionsStore = useQuestionsStore()
 const userStore = useUserStore()
 
 // Check if user is admin
@@ -148,7 +148,7 @@ const getModerationTagType = (status: string) => {
 
 const questionId = route.params.id as string
 
-const loadDiscussion = async () => {
+const loadQuestion = async () => {
   if (!route.params.id) return
 
   try {
@@ -205,7 +205,7 @@ async function submitAnswer() {
 
     message.success(t('common.submitSuccess'))
     newAnswer.value = ''
-    await loadDiscussion()
+    await loadQuestion()
   } catch (error: any) {
     message.error(error.message || t('common.submitFailed'))
   } finally {
@@ -226,7 +226,7 @@ const showAnswer = (answer: Answer | undefined | null) => {
 }
 
 onMounted(() => {
-  loadDiscussion()
+  loadQuestion()
 })
 
 // Add this to handle route changes
@@ -234,7 +234,7 @@ watch(
   () => route.params.id,
   (newId) => {
     if (newId) {
-      loadDiscussion()
+      loadQuestion()
     }
   }
 )
