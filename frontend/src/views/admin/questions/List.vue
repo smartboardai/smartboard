@@ -3,18 +3,18 @@ import { ref, onMounted } from 'vue'
 import { useMessage, useDialog } from 'naive-ui'
 import { t } from '@/locales'
 import { useRouter } from 'vue-router'
-import { useDiscussionsStore } from '@/store/modules/questions'
+import { useQuestionsStore } from '@/store/modules/questions'
 
 const message = useMessage()
 const dialog = useDialog()
 const router = useRouter()
 const loading = ref(false)
-const questionsStore = useDiscussionsStore()
+const questionsStore = useQuestionsStore()
 
 async function fetchQuestions() {
   try {
     loading.value = true
-    await questionsStore.fetchDiscussions()
+    await questionsStore.fetchQuestions()
   } catch (error) {
     message.error(t('common.errorSomeThing'))
   } finally {
@@ -23,7 +23,7 @@ async function fetchQuestions() {
 }
 
 function handleViewDetails(questionId: string) {
-  router.push(`/admin/discussions/${questionId}`)
+  router.push(`/admin/questions/${questionId}`)
 }
 
 async function handleDelete(questionId: string) {
@@ -34,7 +34,7 @@ async function handleDelete(questionId: string) {
     negativeText: t('common.no'),
     onPositiveClick: async () => {
       try {
-        await questionsStore.deleteDiscussion(questionId)
+        await questionsStore.deleteQuestion(questionId)
         message.success(t('common.deleteSuccess'))
       } catch (error) {
         message.error(t('common.deleteFailed'))
@@ -54,7 +54,7 @@ const userInfo = computed(() => userStore.$state.user!!)
   <div class="p-4">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-2xl font-bold">{{ t('common.Questions') }}</h2>
-      <NButton type="primary" @click="router.push('/admin/submit-discussion')">
+      <NButton type="primary" @click="router.push('/admin/submit-question')">
         {{ t('common.submitNewQuestion') }}
       </NButton>
     </div>
@@ -92,4 +92,4 @@ const userInfo = computed(() => userStore.$state.user!!)
       </NCard>
     </div>
   </div>
-</template> 
+</template>

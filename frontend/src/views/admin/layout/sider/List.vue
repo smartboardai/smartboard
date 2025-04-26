@@ -110,12 +110,12 @@ async function handleUpdateValue(key: string, item: MenuOption) {
       handleFinish()
       break
 
-      case 'submit-discussion':
-        await router.push({ name: 'submit-discussion' });
+      case 'submit-question':
+        await router.push({ name: 'submit-question' });
         handleFinish()
         break
-      case 'list-discussions':
-        await router.push({ name: 'list-discussions' });
+      case 'list-questions':
+        await router.push({ name: 'list-questions' });
         handleFinish()
         break
     case 'ai-settings':
@@ -177,12 +177,12 @@ const menuOptions = computed(() => {
       children: [
         {
           label: t('common.submitNewQuestion'),
-          key: 'submit-discussion',
+          key: 'submit-question',
           icon: iconRender({ icon: 'mdi:plus-circle' }),
         },
         {
           label: t('common.listQuestions'),
-          key: 'list-discussions',
+          key: 'list-questions',
           icon: iconRender({ icon: 'mdi:format-list-bulleted' }),
         }
       ]

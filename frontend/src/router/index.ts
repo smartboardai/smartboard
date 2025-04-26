@@ -38,6 +38,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/auth/signUp.vue'),
   },
 
+
+
   {
     path: '/admin',
     name: 'admin',
@@ -106,20 +108,20 @@ const routes: RouteRecordRaw[] = [
       },
 
       {
-        path: '/admin/submit-discussion',
-        name: 'submit-discussion',
+        path: '/admin/submit-question',
+        name: 'submit-question',
         component: () => import('@/views/admin/questions/Submit.vue'),
         meta: { requiresAuth: true },
       },
       {
-        path: '/admin/list-discussions',
-        name: 'list-discussions',
+        path: '/admin/list-questions',
+        name: 'list-questions',
         component: () => import('@/views/admin/questions/List.vue'),
         meta: { requiresAuth: true },
       },
       {
-        path: '/admin/discussions/:id',
-        name: 'discussion-details',
+        path: '/admin/questions/:id',
+        name: 'question-details',
         component: () => import('@/views/admin/questions/Details.vue'),
         meta: { requiresAuth: true },
       },
@@ -129,6 +131,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/admin/settings_app/AISettings.vue'),
         meta: { requiresAuth: true },
       },
+
 
     ],
 
@@ -146,6 +149,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/exception/500/index.vue'),
     meta: { requiresAuth: false },
   },
+
 
   {
     path: '/:pathMatch(.*)*',

@@ -83,10 +83,10 @@ const getFileName = (fileUrl: string) => {
     // First try to get the last part of the URL path
     const urlParts = fileUrl.split('/')
     const encodedFileName = urlParts[urlParts.length - 1]
-    
+
     // Decode the URL encoded string
     const decodedFileName = decodeURIComponent(encodedFileName)
-    
+
     return decodedFileName
   } catch (error) {
     // Fallback to simple split if decoding fails
@@ -97,42 +97,42 @@ const getFileName = (fileUrl: string) => {
 // Optional: Add function to truncate long file names
 const truncateFileName = (fileName: string, maxLength = 20) => {
   if (fileName.length <= maxLength) return fileName
-  
+
   const extension = fileName.split('.').pop() || ''
   const name = fileName.slice(0, fileName.lastIndexOf('.'))
-  
+
   return `${name.slice(0, maxLength)}...${extension}`
 }
 
 // Add function to get file icon name based on type
 const getFileIconName = (fileType?: string, fileName?: string) => {
   if (!fileType && !fileName) return 'mdi:file-document-outline'
-  
+
   const type = fileType || getFileType(fileName || '')
-  
+
   if (type.startsWith('image/')) return 'mdi:file-image-outline'
   if (type.startsWith('video/')) return 'mdi:file-video-outline'
   if (type.startsWith('audio/')) return 'mdi:file-music-outline'
   if (type.includes('pdf')) return 'mdi:file-pdf-box'
   if (type.includes('excel') || type.includes('spreadsheet')) return 'mdi:file-excel-outline'
   if (type.includes('javascript') || type.includes('python') || type.includes('code')) return 'mdi:file-code-outline'
-  
+
   return 'mdi:file-document-outline'
 }
 
 // Add function to get file type label
 const getFileTypeLabel = (fileType?: string, fileName?: string) => {
   if (!fileType && !fileName) return 'Document'
-  
+
   const type = fileType || getFileType(fileName || '')
-  
+
   if (type.startsWith('image/')) return 'Image'
   if (type.startsWith('video/')) return 'Video'
   if (type.startsWith('audio/')) return 'Audio'
   if (type.includes('pdf')) return 'PDF'
   if (type.includes('excel') || type.includes('spreadsheet')) return 'Spreadsheet'
   if (type.includes('javascript') || type.includes('python') || type.includes('code')) return 'Code'
-  
+
   return 'Document'
 }
 
@@ -154,7 +154,7 @@ const loadDiscussion = async () => {
   try {
     loading.value = true
     const response = await axios.get(`${baseURL}discussions/questions/${route.params.id}/`)
-    
+
     if (response.data) {
       discussion.value = response.data
     }
@@ -205,7 +205,7 @@ async function submitAnswer() {
 
     message.success(t('common.submitSuccess'))
     newAnswer.value = ''
-    await loadQuestion()
+    await loadDiscussion()
   } catch (error: any) {
     message.error(error.message || t('common.submitFailed'))
   } finally {
@@ -219,14 +219,14 @@ const showAnswer = (answer: Answer | undefined | null) => {
     console.log('Answer is null or undefined')
     return false
   }
-  
+
   console.log('Answer status:', answer.moderation_status)
   // Show all answers except rejected ones
   return answer.moderation_status !== 'rejected'
 }
 
 onMounted(() => {
-  loadQuestion()
+  loadDiscussion()
 })
 
 // Add this to handle route changes
@@ -234,7 +234,7 @@ watch(
   () => route.params.id,
   (newId) => {
     if (newId) {
-      loadQuestion()
+      loadDiscussion()
     }
   }
 )
@@ -251,27 +251,27 @@ watch(
     </div>
 
     <template v-else>
-      <template v-if="question">
+      <template v-if="discussion">
         <NCard>
           <template #header>
             <div class="flex justify-between items-center">
-              <h2 class="text-2xl font-bold">{{ question.title }}</h2>
-              <NTag :type="question.category === 'technical' ? 'info' : 'success'">
-                {{ question.category }}
+              <h2 class="text-2xl font-bold">{{ discussion.title }}</h2>
+              <NTag :type="discussion.category === 'technical' ? 'info' : 'success'">
+                {{ discussion.category }}
               </NTag>
             </div>
           </template>
 
           <div class="space-y-4">
-            <div class="question-content">
-              {{ question.content }}
+            <div class="discussion-content">
+              {{ discussion.content }}
             </div>
 
-            <div v-if="question?.media?.length" class="mt-4">
+            <div v-if="discussion?.media?.length" class="mt-4">
               <h4 class="text-lg font-semibold mb-4">{{ t('common.attachments') }}</h4>
               <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <div v-for="file in question.media" 
-                     :key="file.id" 
+                <div v-for="file in discussion.media"
+                     :key="file.id"
                      class="transition-all duration-300 group"
                 >
                   <!-- Image files -->
@@ -291,7 +291,7 @@ watch(
                       </div>
                     </div>
                   </template>
-                  
+
                   <!-- Non-image files -->
                   <template v-else>
                     <NCard class="h-full min-h-[200px] transition-all duration-300 border border-gray-200 hover:shadow-lg hover:-translate-y-1 dark:border-gray-700 dark:bg-gray-800 group-hover:border-primary">
@@ -305,20 +305,20 @@ watch(
                               class="w-12 h-12"
                             />
                           </div>
-                          
+
                           <!-- File Name -->
                           <div class="text-sm font-medium text-center mb-2 text-gray-700 dark:text-gray-200 line-clamp-2">
                             {{ getFileName(file.file) }}
                           </div>
-                          
+
                           <!-- File Type Label -->
-                          <NTag :type="file.file_type?.includes('pdf') ? 'error' : 'default'" 
-                                size="small" 
+                          <NTag :type="file.file_type?.includes('pdf') ? 'error' : 'default'"
+                                size="small"
                                 class="group-hover:border-primary">
                             {{ getFileTypeLabel(file.file_type, file.file) }}
                           </NTag>
                         </div>
-                        
+
                         <!-- Download Button Section -->
                         <div class="p-3 border-t bg-gray-50/50 dark:bg-gray-900/50">
                           <NButton
@@ -348,8 +348,8 @@ watch(
         <div class="mt-8">
           <h3 class="text-xl font-bold mb-4">{{ t('common.answers') }}</h3>
           <div class="space-y-4">
-            <NCard 
-              v-for="answer in question?.answers || []" 
+            <NCard
+              v-for="answer in discussion?.answers || []"
               :key="answer.id"
               class="relative"
             >
@@ -395,8 +395,8 @@ watch(
                 <div class="flex justify-between items-center">
                   <NTime :time="new Date(answer.created_at)" />
                   <div class="flex gap-2">
-                    <NTag 
-                      v-if="answer.similarity_score > 0.5" 
+                    <NTag
+                      v-if="answer.similarity_score > 0.5"
                       type="warning"
                       size="small"
                     >
@@ -426,7 +426,7 @@ watch(
           </NForm>
         </div>
       </template>
-      
+
       <template v-else>
         <NResult
           status="404"
@@ -443,8 +443,8 @@ watch(
     </template>
 
     <!-- Add this temporarily for debugging -->
-    <!-- <div v-if="question" class="mb-4 p-4 bg-gray-100">
-      <pre>{{ JSON.stringify(question.answers, null, 2) }}</pre>
+    <!-- <div v-if="discussion" class="mb-4 p-4 bg-gray-100">
+      <pre>{{ JSON.stringify(discussion.answers, null, 2) }}</pre>
     </div> -->
   </div>
 </template>
