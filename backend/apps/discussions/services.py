@@ -89,7 +89,7 @@ class AIService:
                     API_URL,
                     headers=headers,
                     json=payload,
-                    timeout=45  # Increased timeout for larger model
+                    timeout=10  # Increased timeout for larger model
                 )
 
                 # Log the response for debugging
